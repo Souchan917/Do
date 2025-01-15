@@ -35,12 +35,32 @@
             margin-bottom: 20px;
             position: relative;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             color: #333;
-            font-size: 48px;
-            font-weight: bold;
+        }
+
+        /* 問題画像用のスタイル */
+        .puzzle-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        /* 問題エリア内の要素用のスタイル */
+        .problem-element {
+            position: absolute;
+            transform-origin: left top;
+            white-space: nowrap;
+            z-index: 2;
+            /* テキストを見やすくするための装飾 */
+            text-shadow: 
+                -1px -1px 0 #fff,
+                1px -1px 0 #fff,
+                -1px 1px 0 #fff,
+                1px 1px 0 #fff;
         }
 
         .title-area {
@@ -119,14 +139,14 @@
         }
 
         .shake {
-            animation: shakeAnimation 0.5s ease-in-out;
+            animation: shakeAnimation 0.2s ease-in-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="problem-area" id="problemArea">
-            0.00
+            <!-- 問題エリア内の要素は JavaScript で動的に追加 -->
         </div>
         
         <div class="title-area">
@@ -164,11 +184,10 @@
         let isPlaying = false;
         let currentTime = 0;
         const totalDuration = 312; // 5:12 in seconds
-        let currentStage = 0; // 0: チュートリアル, 1-8: 問題, 9: クリア
-        const audio = new Audio('assets/audio/MV.mp3');
+        let currentStage = 0;
+        const audio = new Audio('assets/audio/MT.mp3');
         let clearedStages = new Set();
         
-        // 五十音配列
         const HIRAGANA = [
             'あ', 'い', 'う', 'え', 'お',
             'か', 'き', 'く', 'け', 'こ',
@@ -182,8 +201,23 @@
             'わ', 'を', 'ん'
         ];
 
-        // 文字切り替えの間隔（秒）
-        let characterChangeInterval = 60*4/170; // 約1.416秒
+        let characterChangeInterval = 60*4/170;
+
+        // 問題要素の位置とスタイルの設定
+        const ELEMENT_SETTINGS = {
+            timer: {
+                x: 25, // 左から25%
+                y: 25, // 上から25%
+                size: 60, // 基準フォントサイズ
+                id: 'timer-display'
+            },
+            hiragana: {
+                x: 50, // 左から50%
+                y: 50, // 上から50%
+                size: 100, // 基準フォントサイズ
+                id: 'hiragana-display'
+            }
+        };
 
         const STAGE_NAMES = [
             "チュートリアル",
@@ -192,18 +226,16 @@
             "クリア"
         ];
 
-        // ステージごとのクリア条件（秒数範囲）- 実際の値は仮の例です
         const stageClearConditions = {
-            0: { min: 0, max: totalDuration }, // チュートリアルは常にクリア可能
-            1: { min: 10, max: 20 },
-            2: { min: 30, max: 40 },
-            3: { min: 50, max: 60 },
-            4: { min: 70, max: 80 },
-            5: { min: 90, max: 100 },
-            6: { min: 110, max: 120 },
-            7: { min: 130, max: 140 },
-            8: { min: 150, max: 160 }
-            // 9はクリア画面なので条件なし
+            0: { min: 0, max: totalDuration },
+            1: { min: 10, max: 100 },
+            2: { min: 10, max: 100 },
+            3: { min: 10, max: 100 },
+            4: { min: 10, max: 100 },
+            5: { min: 10, max: 100 },
+            6: { min: 10, max: 120 },
+            7: { min: 10, max: 140 },
+            8: { min: 10, max: 160 }
         };
         
         // DOM Elements
@@ -216,8 +248,63 @@
         const problemArea = document.getElementById('problemArea');
         const titleArea = document.querySelector('.title-area h2');
         
-        // 文字切り替え用のタイムスタンプ
         let lastCharacterChangeTime = 0;
+
+        // 問題画像の設定
+        const PUZZLE_IMAGES = {
+            0: null, // チュートリアルは画像なし
+            1: "assets/images/puzzles/puzzle1.png",
+            2: "assets/images/puzzles/puzzle2.png",
+            3: "assets/images/puzzles/puzzle3.png",
+            4: "assets/images/puzzles/puzzle4.png",
+            5: "assets/images/puzzles/puzzle5.png",
+            6: "assets/images/puzzles/puzzle6.png",
+            7: "assets/images/puzzles/puzzle7.png",
+            8: "assets/images/puzzles/puzzle8.png",
+            9: "assets/images/puzzles/clear.png"  // クリア画面用
+        };
+
+        // 問題エリア内の要素を作成する関数
+        function createProblemElement(settings) {
+            const element = document.createElement('div');
+            element.id = settings.id;
+            element.className = 'problem-element';
+            problemArea.appendChild(element);
+            return element;
+        }
+
+        // 問題画像を更新する関数
+        function updatePuzzleImage() {
+            let existingImage = problemArea.querySelector('.puzzle-image');
+            if (existingImage) {
+                existingImage.remove();
+            }
+
+            const imagePath = PUZZLE_IMAGES[currentStage];
+            if (imagePath) {
+                const imageElement = document.createElement('img');
+                imageElement.src = imagePath;
+                imageElement.className = 'puzzle-image';
+                imageElement.alt = `Puzzle ${currentStage}`;
+                // 既存の要素の前に画像を挿入
+                problemArea.insertBefore(imageElement, problemArea.firstChild);
+            }
+        }
+
+        // 要素の位置とサイズを更新する関数
+        function updateElementPosition(element, settings) {
+            const containerWidth = problemArea.clientWidth;
+            const containerHeight = problemArea.clientHeight;
+            
+            // フォントサイズを問題エリアのサイズに応じて調整
+            const scaleFactor = Math.min(containerWidth, containerHeight) / 400; // 400は基準サイズ
+            const fontSize = settings.size * scaleFactor;
+            
+            element.style.fontSize = `${fontSize}px`;
+            element.style.left = `${settings.x}%`;
+            element.style.top = `${settings.y}%`;
+            element.style.transform = 'translate(-50%, -50%)'; // 中心を基準に配置
+        }
 
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
@@ -236,21 +323,38 @@
             }, 500);
         }
 
-        function updateStageContent() {
-            titleArea.textContent = STAGE_NAMES[currentStage];
-            
-            // チュートリアルの場合は秒数表示
+        // 問題エリアの要素を更新
+        function updateProblemElements() {
+            const timerElement = document.getElementById(ELEMENT_SETTINGS.timer.id) || 
+                               createProblemElement(ELEMENT_SETTINGS.timer);
+            const hiraganaElement = document.getElementById(ELEMENT_SETTINGS.hiragana.id) || 
+                                  createProblemElement(ELEMENT_SETTINGS.hiragana);
+
             if (currentStage === 0) {
-                problemArea.textContent = formatTimeWithMS(currentTime);
+                timerElement.style.display = 'block';
+                hiraganaElement.style.display = 'none';
+                timerElement.textContent = formatTimeWithMS(currentTime);
             } 
-            // 1問目の場合は五十音順の文字表示
             else if (currentStage === 1) {
+                timerElement.style.display = 'none';
+                hiraganaElement.style.display = 'block';
                 const currentIndex = Math.floor(currentTime / characterChangeInterval) % HIRAGANA.length;
-                problemArea.textContent = HIRAGANA[currentIndex];
+                hiraganaElement.textContent = HIRAGANA[currentIndex];
             }
             else {
-                problemArea.textContent = ""; // 他のステージでは非表示
+                timerElement.style.display = 'none';
+                hiraganaElement.style.display = 'none';
             }
+
+            // 位置とサイズを更新
+            updateElementPosition(timerElement, ELEMENT_SETTINGS.timer);
+            updateElementPosition(hiraganaElement, ELEMENT_SETTINGS.hiragana);
+        }
+
+        function updateStageContent() {
+            titleArea.textContent = STAGE_NAMES[currentStage];
+            updatePuzzleImage();  // 問題画像を更新
+            updateProblemElements();  // タイマーやひらがなを更新
         }
 
         function updateProgress() {
@@ -259,6 +363,7 @@
             currentTimeDisplay.textContent = formatTime(currentTime);
         }
 
+        // イベントリスナーの設定
         playButton.addEventListener('click', () => {
             if (isPlaying) {
                 audio.pause();
@@ -278,7 +383,7 @@
         });
 
         nextButton.addEventListener('click', () => {
-            if (currentStage === 9) return; // クリア画面では何もしない
+            if (currentStage === 9) return;
 
             const condition = stageClearConditions[currentStage];
             if (clearedStages.has(currentStage) || 
@@ -287,31 +392,22 @@
                 currentStage++;
                 updateStageContent();
             } else {
-                shakeNextButton(); // タイミング外ならシェイクアニメーション
+                shakeNextButton();
             }
+        });
+
+        // リサイズ時の処理
+        window.addEventListener('resize', () => {
+            updateProblemElements();
         });
 
         // 更新ループ
         function update() {
             if (isPlaying) {
                 currentTime = audio.currentTime;
-
-                // シークバーと時間表示の更新
                 updateProgress();
-
-                // ステージごとの表示更新
-                if (currentStage === 0) {
-                    problemArea.textContent = formatTimeWithMS(currentTime);
-                } else if (currentStage === 1) {
-                    // 文字の切り替えタイミングを正確に制御
-                    if (currentTime - lastCharacterChangeTime >= characterChangeInterval) {
-                        const currentIndex = Math.floor(currentTime / characterChangeInterval) % HIRAGANA.length;
-                        problemArea.textContent = HIRAGANA[currentIndex];
-                        lastCharacterChangeTime = currentTime;
-                    }
-                }
+                updateProblemElements();
             }
-
             requestAnimationFrame(update);
         }
 
