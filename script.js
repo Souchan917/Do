@@ -30,14 +30,14 @@ const STAGE_NAMES = [
 
 const stageClearConditions = {
     0: { min: 0, max: totalDuration },
-    1: { min: 10, max: 20 },
-    2: { min: 10, max: 40 },
-    3: { min: 10, max: 60 },
-    4: { min: 10, max: 80 },
-    5: { min: 10, max: 100 },
-    6: { min: 10, max: 120 },
-    7: { min: 10, max: 140 },
-    8: { min: 10, max: 160 }
+    1: { min: 10, max: 220 },
+    2: { min: 10, max: 240 },
+    3: { min: 10, max: 260 },
+    4: { min: 10, max: 280 },
+    5: { min: 10, max: 200 },
+    6: { min: 10, max: 220 },
+    7: { min: 10, max: 240 },
+    8: { min: 10, max: 260 }
 };
 
 // 問題画像の設定
@@ -137,7 +137,7 @@ function updateAnswer() {
 const TIMER_SETTINGS = {
     x: 25,
     y: 25,
-    size: 16,
+    size: 60,
     id: 'timer-display'
 };
 
@@ -160,7 +160,7 @@ const HIRAGANA = [
 const HIRAGANA_SETTINGS = {
     x: 50,
     y: 50,
-    size: 48,
+    size: 60,
     id: 'hiragana-display'
 };
 
@@ -369,6 +369,16 @@ playButton.addEventListener('click', () => {
         playIcon.src = 'assets/images/controls/pause.png';
     }
     isPlaying = !isPlaying;
+});
+
+// オーディオイベント
+audio.addEventListener('ended', () => {
+    // 時間をリセット
+    currentTime = 0;
+    audio.currentTime = 0;
+    
+    // 再生を継続
+    audio.play();
 });
 
 prevButton.addEventListener('click', () => {
