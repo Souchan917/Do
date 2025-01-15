@@ -1,0 +1,188 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: white;
+    transition: background-color 0.5s ease;
+}
+
+/* ステージごとのテーマカラー用のクラス */
+body.stage-0 { background-color: #808080; }  /* チュートリアル: 灰色 */
+body.stage-1 { background-color: #8B0000; }  /* 1問目: 赤黒 */
+body.stage-2 { background-color: #D35400; }  /* 2問目: 暗いオレンジ */
+body.stage-3 { background-color: #B7950B; }  /* 3問目: 暗い黄色 */
+body.stage-4 { background-color: #186A3B; }  /* 4問目: 暗い緑 */
+body.stage-5 { background-color: #1F618D; }  /* 5問目: 青 */
+body.stage-6 { background-color: #1A237E; }  /* 6問目: 藍色 */
+body.stage-7 { background-color: #4A235A; }  /* 7問目: 紫色 */
+body.stage-8 { background-color: #212121; }  /* 8問目: 黒 */
+body.stage-9 { background-color: #5D4037; }  /* クリア: 茶色 */
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.problem-area {
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    color: #333;
+}
+
+.puzzle-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.problem-element {
+    position: absolute;
+    transform-origin: left top;
+    white-space: nowrap;
+    z-index: 2;
+    text-shadow: 
+        -1px -1px 0 #fff,
+        1px -1px 0 #fff,
+        -1px 1px 0 #fff,
+        1px 1px 0 #fff;
+}
+
+.title-area {
+    margin-bottom: 20px;
+}
+
+.title-area h2 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.title-area p {
+    color: #ccc;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: transparent;
+    border-radius: 2px;
+    margin-bottom: 10px;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    touch-action: none;
+}
+
+.progress-track {
+    width: 100%;
+    height: 4px;
+    background-color: #4a4a4a;
+    border-radius: 2px;
+    position: relative;
+}
+
+.progress {
+    position: absolute;
+    height: 100%;
+    background-color: white;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+.progress-knob {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    border-radius: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    left: 0%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    transition: transform 0.1s ease;
+}
+
+.progress-knob:active {
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+@media (hover: none) {
+    .progress-knob {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.time-display {
+    display: flex;
+    justify-content: space-between;
+    color: #ccc;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+}
+
+.control-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.control-button img {
+    width: 60px;
+    height: 60px;
+}
+
+.play-pause img {
+    width: 80px;
+    height: 80px;
+}
+
+.answer-area {
+    margin-top: 20px;
+    text-align: center;
+    padding: 10px;
+}
+
+.answer-area p {
+    color: black;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+@keyframes shakeAnimation {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shakeAnimation 0.2s ease-in-out;
+}
