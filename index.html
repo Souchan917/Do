@@ -183,7 +183,7 @@
         ];
 
         // 文字切り替えの間隔（秒）
-        let characterChangeInterval = 170/60/2; // この値を変更することで切り替え速度を調整可能
+        let characterChangeInterval = 60*4/170; // 約1.416秒
 
         const STAGE_NAMES = [
             "チュートリアル",
@@ -216,6 +216,9 @@
         const problemArea = document.getElementById('problemArea');
         const titleArea = document.querySelector('.title-area h2');
         
+        // 文字切り替え用のタイムスタンプ
+        let lastCharacterChangeTime = 0;
+
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
@@ -254,14 +257,6 @@
             const progress = (currentTime / totalDuration) * 100;
             progressBar.style.width = `${progress}%`;
             currentTimeDisplay.textContent = formatTime(currentTime);
-            
-            // ステージごとの表示更新
-            if (currentStage === 0) {
-                problemArea.textContent = formatTimeWithMS(currentTime);
-            } else if (currentStage === 1) {
-                const currentIndex = Math.floor(currentTime / characterChangeInterval) % HIRAGANA.length;
-                problemArea.textContent = HIRAGANA[currentIndex];
-            }
         }
 
         playButton.addEventListener('click', () => {
@@ -273,11 +268,6 @@
                 playIcon.src = 'assets/images/controls/pause.png';
             }
             isPlaying = !isPlaying;
-        });
-
-        audio.addEventListener('timeupdate', () => {
-            currentTime = audio.currentTime;
-            updateProgress();
         });
 
         prevButton.addEventListener('click', () => {
@@ -301,9 +291,38 @@
             }
         });
 
+        // 更新ループ
+        function update() {
+            if (isPlaying) {
+                currentTime = audio.currentTime;
+
+                // シークバーと時間表示の更新
+                updateProgress();
+
+                // ステージごとの表示更新
+                if (currentStage === 0) {
+                    problemArea.textContent = formatTimeWithMS(currentTime);
+                } else if (currentStage === 1) {
+                    // 文字の切り替えタイミングを正確に制御
+                    if (currentTime - lastCharacterChangeTime >= characterChangeInterval) {
+                        const currentIndex = Math.floor(currentTime / characterChangeInterval) % HIRAGANA.length;
+                        problemArea.textContent = HIRAGANA[currentIndex];
+                        lastCharacterChangeTime = currentTime;
+                    }
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        function initialize() {
+            updateStageContent();
+            updateProgress();
+            requestAnimationFrame(update);
+        }
+
         // 初期化
-        updateStageContent();
-        updateProgress();
+        initialize();
     </script>
 </body>
 </html>
