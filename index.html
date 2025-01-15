@@ -12,14 +12,26 @@
         }
 
         body {
-            background-color: #8B0000;
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             color: white;
+            transition: background-color 0.5s ease;  /* 背景色の変更をスムーズに */
         }
+
+        /* ステージごとのテーマカラー用のクラス */
+        body.stage-0 { background-color: #808080; }  /* チュートリアル: 灰色 */
+        body.stage-1 { background-color: #8B0000; }  /* 1問目: 赤黒 */
+        body.stage-2 { background-color: #D35400; }  /* 2問目: 暗いオレンジ */
+        body.stage-3 { background-color: #B7950B; }  /* 3問目: 暗い黄色 */
+        body.stage-4 { background-color: #186A3B; }  /* 4問目: 暗い緑 */
+        body.stage-5 { background-color: #1F618D; }  /* 5問目: 青 */
+        body.stage-6 { background-color: #1A237E; }  /* 6問目: 藍色 */
+        body.stage-7 { background-color: #4A235A; }  /* 7問目: 紫色 */
+        body.stage-8 { background-color: #212121; }  /* 8問目: 黒 */
+        body.stage-9 { background-color: #5D4037; }  /* クリア: 茶色 */
 
         .container {
             width: 100%;
@@ -78,10 +90,22 @@
 
         .progress-bar {
             width: 100%;
-            height: 4px;
-            background-color: #4a4a4a;
+            height: 20px;  /* タッチ操作用の余白を確保 */
+            background-color: transparent;  /* 背景を透明に */
             border-radius: 2px;
             margin-bottom: 10px;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            touch-action: none;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 4px;  /* 元のバーの高さ */
+            background-color: #4a4a4a;
+            border-radius: 2px;
             position: relative;
         }
 
@@ -92,6 +116,32 @@
             border-radius: 2px;
             width: 0%;
             transition: width 0.1s linear;
+        }
+
+        .progress-knob {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: white;
+            border-radius: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            left: 0%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            transition: transform 0.1s ease;
+        }
+
+        .progress-knob:active {
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        /* タッチデバイス用のホバー効果 */
+        @media (hover: none) {
+            .progress-knob {
+                width: 16px;
+                height: 16px;
+            }
         }
 
         .time-display {
@@ -154,8 +204,11 @@
             <p>Start</p>
         </div>
 
-        <div class="progress-bar">
-            <div class="progress" id="progress"></div>
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-track">
+                <div class="progress" id="progress"></div>
+                <div class="progress-knob" id="progressKnob"></div>
+            </div>
         </div>
 
         <div class="time-display">
@@ -208,13 +261,13 @@
             timer: {
                 x: 25, // 左から25%
                 y: 25, // 上から25%
-                size: 60, // 基準フォントサイズ
+                size: 16, // 基準フォントサイズ
                 id: 'timer-display'
             },
             hiragana: {
                 x: 50, // 左から50%
                 y: 50, // 上から50%
-                size: 100, // 基準フォントサイズ
+                size: 48, // 基準フォントサイズ
                 id: 'hiragana-display'
             }
         };
@@ -228,10 +281,10 @@
 
         const stageClearConditions = {
             0: { min: 0, max: totalDuration },
-            1: { min: 10, max: 100 },
-            2: { min: 10, max: 100 },
-            3: { min: 10, max: 100 },
-            4: { min: 10, max: 100 },
+            1: { min: 10, max: 20 },
+            2: { min: 10, max: 40 },
+            3: { min: 10, max: 60 },
+            4: { min: 10, max: 80 },
             5: { min: 10, max: 100 },
             6: { min: 10, max: 120 },
             7: { min: 10, max: 140 },
@@ -351,17 +404,103 @@
             updateElementPosition(hiraganaElement, ELEMENT_SETTINGS.hiragana);
         }
 
+        const STAGE_COLORS = {
+            0: '#808080', // チュートリアル: 灰色
+            1: '#8B0000', // 1問目: 赤黒
+            2: '#D35400', // 2問目: 暗いオレンジ
+            3: '#B7950B', // 3問目: 暗い黄色
+            4: '#186A3B', // 4問目: 暗い緑
+            5: '#1F618D', // 5問目: 青
+            6: '#1A237E', // 6問目: 藍色
+            7: '#4A235A', // 7問目: 紫色
+            8: '#212121', // 8問目: 黒
+            9: '#5D4037'  // クリア: 茶色
+        };
+
+        // 背景色を更新する関数
+        function updateBackgroundColor() {
+            document.body.className = `stage-${currentStage}`;
+        }
+
+        // ステージ更新関数を修正
         function updateStageContent() {
             titleArea.textContent = STAGE_NAMES[currentStage];
-            updatePuzzleImage();  // 問題画像を更新
-            updateProblemElements();  // タイマーやひらがなを更新
+            updatePuzzleImage();
+            updateProblemElements();
+            updateBackgroundColor();  // 背景色の更新を追加
         }
 
         function updateProgress() {
             const progress = (currentTime / totalDuration) * 100;
-            progressBar.style.width = `${progress}%`;
+            document.getElementById('progress').style.width = `${progress}%`;
+            document.getElementById('progressKnob').style.left = `${progress}%`;
             currentTimeDisplay.textContent = formatTime(currentTime);
         }
+
+        // シークバーの操作に関する処理
+        const progressBarElement = document.getElementById('progressBar');
+        let isDragging = false;
+
+        function updateTimeFromClick(event) {
+            const rect = progressBarElement.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const width = rect.width;
+            const percentage = Math.max(0, Math.min(1, x / width));
+            
+            currentTime = percentage * totalDuration;
+            audio.currentTime = currentTime;
+            updateProgress();
+        }
+
+        function handleTouchStart(event) {
+            isDragging = true;
+            updateTimeFromTouch(event);
+            progressBarElement.addEventListener('touchmove', handleTouchMove);
+        }
+
+        function handleTouchMove(event) {
+            if (isDragging) {
+                event.preventDefault();
+                updateTimeFromTouch(event);
+            }
+        }
+
+        function handleTouchEnd() {
+            isDragging = false;
+            progressBarElement.removeEventListener('touchmove', handleTouchMove);
+        }
+
+        function updateTimeFromTouch(event) {
+            const touch = event.touches[0];
+            const rect = progressBarElement.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const width = rect.width;
+            const percentage = Math.max(0, Math.min(1, x / width));
+            
+            currentTime = percentage * totalDuration;
+            audio.currentTime = currentTime;
+            updateProgress();
+        }
+
+        // マウスイベントの設定
+        progressBarElement.addEventListener('mousedown', (event) => {
+            isDragging = true;
+            updateTimeFromClick(event);
+        });
+
+        document.addEventListener('mousemove', (event) => {
+            if (isDragging) {
+                updateTimeFromClick(event);
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // タッチイベントの設定
+        progressBarElement.addEventListener('touchstart', handleTouchStart);
+        progressBarElement.addEventListener('touchend', handleTouchEnd);
 
         // イベントリスナーの設定
         playButton.addEventListener('click', () => {
