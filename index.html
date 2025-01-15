@@ -3,202 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Player</title>
+    <title>Do - Music Puzzle Game</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            background-color: #121212;
-            color: white;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #8B0000;
             font-family: Arial, sans-serif;
-        }
-
-        .player-container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .track-image {
-            width: 100%;
-            aspect-ratio: 1;
-            background-color: #282828;
-            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 24px;
+            min-height: 100vh;
+            color: white;
         }
 
-        .counter {
-            font-size: 48px;
-            font-weight: bold;
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
         }
 
-        .track-info {
-            text-align: center;
-            margin-bottom: 24px;
+        .problem-area {
+            width: 100%;
+            aspect-ratio: 1;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .track-title {
+        .title-area {
+            margin-bottom: 20px;
+        }
+
+        .title-area h2 {
             font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
-        .track-artist {
-            color: #b3b3b3;
+        .title-area p {
+            color: #ccc;
         }
 
         .progress-bar {
             width: 100%;
             height: 4px;
-            background-color: #404040;
+            background-color: #4a4a4a;
             border-radius: 2px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            position: relative;
         }
 
         .progress {
-            width: 0%;
+            position: absolute;
             height: 100%;
-            background-color: #1db954;
+            background-color: white;
             border-radius: 2px;
-            transition: width 0.3s;
+            width: 0%;
+            transition: width 0.1s linear;
         }
 
-        .time-info {
+        .time-display {
             display: flex;
             justify-content: space-between;
-            color: #b3b3b3;
+            color: #ccc;
+            margin-bottom: 20px;
             font-size: 14px;
-            margin-bottom: 24px;
         }
 
         .controls {
             display: flex;
             justify-content: center;
-            gap: 24px;
             align-items: center;
+            gap: 32px;
         }
 
         .control-button {
             background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            padding: 8px;
-        }
-
-        .play-button {
-            background-color: #1db954;
+            border: 2px solid white;
             border-radius: 50%;
-            width: 56px;
-            height: 56px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .play-button:hover {
-            background-color: #1ed760;
+        .play-pause {
+            width: 60px;
+            height: 60px;
+        }
+
+        .control-button img {
+            width: 50%;
+            height: 50%;
+            filter: invert(1);
+        }
+
+        .answer-area {
+            margin-top: 20px;
+            text-align: center;
+            color: #4CAF50;
         }
     </style>
 </head>
 <body>
-    <div class="player-container">
-        <div class="track-image">
-            <div class="counter" id="counter">0</div>
+    <div class="container">
+        <div class="problem-area">
+            <!-- Problem content will be dynamically inserted here -->
         </div>
-        <div class="track-info">
-            <div class="track-title">謎解き 1</div>
-            <div class="track-artist">Mystery Artist</div>
+        
+        <div class="title-area">
+            <h2>問題 01</h2>
+            <p>Start</p>
         </div>
+
         <div class="progress-bar">
             <div class="progress" id="progress"></div>
         </div>
-        <div class="time-info">
-            <span id="current-time">0:00</span>
-            <span>3:30</span>
+
+        <div class="time-display">
+            <span id="currentTime">0:00</span>
+            <span>5:12</span>
         </div>
+
         <div class="controls">
-            <button class="control-button" id="prev">
-                ⏮
+            <button class="control-button" id="prevButton">
+                <img src="assets/images/controls/prev.png" alt="Previous">
             </button>
-            <button class="control-button play-button" id="play">
-                ▶
+            <button class="control-button play-pause" id="playButton">
+                <img src="assets/images/controls/play.png" alt="Play" id="playIcon">
             </button>
-            <button class="control-button" id="next">
-                ⏭
+            <button class="control-button" id="nextButton">
+                <img src="assets/images/controls/next.png" alt="Next">
             </button>
+        </div>
+
+        <div class="answer-area">
+            <p>答え：答え1</p>
         </div>
     </div>
 
     <script>
-        const playButton = document.getElementById('play');
-        const prevButton = document.getElementById('prev');
-        const nextButton = document.getElementById('next');
-        const progressBar = document.getElementById('progress');
-        const counter = document.getElementById('counter');
-        const currentTimeDisplay = document.getElementById('current-time');
-
         let isPlaying = false;
-        let progressInterval;
-        let counterInterval;
-        let currentProgress = 0;
-        let currentCount = 0;
-
+        let currentTime = 0;
+        const totalDuration = 312; // 5:12 in seconds
+        let currentStage = 1;
+        const audio = new Audio('assets/audio/MV.mp3');
+        
+        // DOM Elements
+        const playButton = document.getElementById('playButton');
+        const playIcon = document.getElementById('playIcon');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const progressBar = document.getElementById('progress');
+        const currentTimeDisplay = document.getElementById('currentTime');
+        
+        // Format time function
         function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
+        // Update progress bar
         function updateProgress() {
-            if (currentProgress < 100) {
-                currentProgress += 0.5;
-                progressBar.style.width = `${currentProgress}%`;
-                currentTimeDisplay.textContent = formatTime(Math.floor(currentProgress * 2.1));
-            } else {
-                stopPlaying();
-            }
+            const progress = (currentTime / totalDuration) * 100;
+            progressBar.style.width = `${progress}%`;
+            currentTimeDisplay.textContent = formatTime(currentTime);
         }
 
-        function updateCounter() {
-            currentCount += 1;
-            counter.textContent = currentCount;
-        }
-
-        function startPlaying() {
-            isPlaying = true;
-            playButton.textContent = '⏸';
-            progressInterval = setInterval(updateProgress, 1000);
-            counterInterval = setInterval(updateCounter, 1000);
-        }
-
-        function stopPlaying() {
-            isPlaying = false;
-            playButton.textContent = '▶';
-            clearInterval(progressInterval);
-            clearInterval(counterInterval);
-        }
-
+        // Play/Pause toggle
         playButton.addEventListener('click', () => {
             if (isPlaying) {
-                stopPlaying();
+                audio.pause();
+                playIcon.src = 'assets/images/controls/play.png';
             } else {
-                startPlaying();
+                audio.play();
+                playIcon.src = 'assets/images/controls/pause.png';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Audio time update event
+        audio.addEventListener('timeupdate', () => {
+            currentTime = audio.currentTime;
+            updateProgress();
+        });
+
+        // Previous button click
+        prevButton.addEventListener('click', () => {
+            if (currentStage > 1) {
+                currentStage--;
+                // Update stage display and content
+                document.querySelector('.title-area h2').textContent = 
+                    `問題 ${currentStage.toString().padStart(2, '0')}`;
             }
         });
 
-        prevButton.addEventListener('click', () => {
-            // 前の曲の処理をここに実装
-            console.log('Previous track');
+        // Next button click
+        nextButton.addEventListener('click', () => {
+            if (currentStage < 10) {
+                currentStage++;
+                // Update stage display and content
+                document.querySelector('.title-area h2').textContent = 
+                    `問題 ${currentStage.toString().padStart(2, '0')}`;
+            }
         });
 
-        nextButton.addEventListener('click', () => {
-            // 次の曲の処理をここに実装
-            console.log('Next track');
-        });
+        // Initialize progress bar
+        updateProgress();
     </script>
 </body>
 </html>
