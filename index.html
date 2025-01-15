@@ -35,6 +35,12 @@
             margin-bottom: 20px;
             position: relative;
             overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            font-size: 48px;
+            font-weight: bold;
         }
 
         .title-area {
@@ -85,25 +91,19 @@
 
         .control-button {
             background: none;
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            border: none;
             cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 0;
         }
 
-        .play-pause {
+        .control-button img {
             width: 60px;
             height: 60px;
         }
 
-        .control-button img {
-            width: 50%;
-            height: 50%;
-            filter: invert(1);
+        .play-pause img {
+            width: 80px;
+            height: 80px;
         }
 
         .answer-area {
@@ -111,16 +111,26 @@
             text-align: center;
             color: #4CAF50;
         }
+
+        @keyframes shakeAnimation {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shakeAnimation 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="problem-area">
-            <!-- Problem content will be dynamically inserted here -->
+        <div class="problem-area" id="problemArea">
+            0.00
         </div>
         
         <div class="title-area">
-            <h2>問題 01</h2>
+            <h2>チュートリアル</h2>
             <p>Start</p>
         </div>
 
@@ -154,8 +164,47 @@
         let isPlaying = false;
         let currentTime = 0;
         const totalDuration = 312; // 5:12 in seconds
-        let currentStage = 1;
-        const audio = new Audio('assets/audio/MV.mp3');
+        let currentStage = 0; // 0: チュートリアル, 1-8: 問題, 9: クリア
+        const audio = new Audio('assets/audio/MT.mp3');
+        let clearedStages = new Set();
+        
+        // 五十音配列
+        const HIRAGANA = [
+            'あ', 'い', 'う', 'え', 'お',
+            'か', 'き', 'く', 'け', 'こ',
+            'さ', 'し', 'す', 'せ', 'そ',
+            'た', 'ち', 'つ', 'て', 'と',
+            'な', 'に', 'ぬ', 'ね', 'の',
+            'は', 'ひ', 'ふ', 'へ', 'ほ',
+            'ま', 'み', 'む', 'め', 'も',
+            'や', 'ゆ', 'よ',
+            'ら', 'り', 'る', 'れ', 'ろ',
+            'わ', 'を', 'ん'
+        ];
+
+        // 文字切り替えの間隔（秒）
+        let characterChangeInterval = 170/60/2; // この値を変更することで切り替え速度を調整可能
+
+        const STAGE_NAMES = [
+            "チュートリアル",
+            "1問目", "2問目", "3問目", "4問目",
+            "5問目", "6問目", "7問目", "8問目",
+            "クリア"
+        ];
+
+        // ステージごとのクリア条件（秒数範囲）- 実際の値は仮の例です
+        const stageClearConditions = {
+            0: { min: 0, max: totalDuration }, // チュートリアルは常にクリア可能
+            1: { min: 10, max: 20 },
+            2: { min: 30, max: 40 },
+            3: { min: 50, max: 60 },
+            4: { min: 70, max: 80 },
+            5: { min: 90, max: 100 },
+            6: { min: 110, max: 120 },
+            7: { min: 130, max: 140 },
+            8: { min: 150, max: 160 }
+            // 9はクリア画面なので条件なし
+        };
         
         // DOM Elements
         const playButton = document.getElementById('playButton');
@@ -164,22 +213,57 @@
         const nextButton = document.getElementById('nextButton');
         const progressBar = document.getElementById('progress');
         const currentTimeDisplay = document.getElementById('currentTime');
+        const problemArea = document.getElementById('problemArea');
+        const titleArea = document.querySelector('.title-area h2');
         
-        // Format time function
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
-        // Update progress bar
+        function formatTimeWithMS(seconds) {
+            return seconds.toFixed(2);
+        }
+
+        function shakeNextButton() {
+            nextButton.classList.add('shake');
+            setTimeout(() => {
+                nextButton.classList.remove('shake');
+            }, 500);
+        }
+
+        function updateStageContent() {
+            titleArea.textContent = STAGE_NAMES[currentStage];
+            
+            // チュートリアルの場合は秒数表示
+            if (currentStage === 0) {
+                problemArea.textContent = formatTimeWithMS(currentTime);
+            } 
+            // 1問目の場合は五十音順の文字表示
+            else if (currentStage === 1) {
+                const currentIndex = Math.floor(currentTime / characterChangeInterval) % HIRAGANA.length;
+                problemArea.textContent = HIRAGANA[currentIndex];
+            }
+            else {
+                problemArea.textContent = ""; // 他のステージでは非表示
+            }
+        }
+
         function updateProgress() {
             const progress = (currentTime / totalDuration) * 100;
             progressBar.style.width = `${progress}%`;
             currentTimeDisplay.textContent = formatTime(currentTime);
+            
+            // ステージごとの表示更新
+            if (currentStage === 0) {
+                problemArea.textContent = formatTimeWithMS(currentTime);
+            } else if (currentStage === 1) {
+                const currentIndex = Math.floor(currentTime / characterChangeInterval) % HIRAGANA.length;
+                problemArea.textContent = HIRAGANA[currentIndex];
+            }
         }
 
-        // Play/Pause toggle
         playButton.addEventListener('click', () => {
             if (isPlaying) {
                 audio.pause();
@@ -191,33 +275,34 @@
             isPlaying = !isPlaying;
         });
 
-        // Audio time update event
         audio.addEventListener('timeupdate', () => {
             currentTime = audio.currentTime;
             updateProgress();
         });
 
-        // Previous button click
         prevButton.addEventListener('click', () => {
-            if (currentStage > 1) {
+            if (currentStage > 0) {
                 currentStage--;
-                // Update stage display and content
-                document.querySelector('.title-area h2').textContent = 
-                    `問題 ${currentStage.toString().padStart(2, '0')}`;
+                updateStageContent();
             }
         });
 
-        // Next button click
         nextButton.addEventListener('click', () => {
-            if (currentStage < 10) {
+            if (currentStage === 9) return; // クリア画面では何もしない
+
+            const condition = stageClearConditions[currentStage];
+            if (clearedStages.has(currentStage) || 
+                (currentTime >= condition.min && currentTime <= condition.max)) {
+                clearedStages.add(currentStage);
                 currentStage++;
-                // Update stage display and content
-                document.querySelector('.title-area h2').textContent = 
-                    `問題 ${currentStage.toString().padStart(2, '0')}`;
+                updateStageContent();
+            } else {
+                shakeNextButton(); // タイミング外ならシェイクアニメーション
             }
         });
 
-        // Initialize progress bar
+        // 初期化
+        updateStageContent();
         updateProgress();
     </script>
 </body>
