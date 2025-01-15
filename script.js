@@ -174,7 +174,7 @@ const SEGMENT_DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const SEGMENT_SETTINGS = {
     x: 50,
     y: 50,
-    size: 24,
+    size: 48,
     id: 'segment-display'
 };
 
