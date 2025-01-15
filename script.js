@@ -57,8 +57,8 @@ const PUZZLE_IMAGES = {
 // ステージの答え
 const STAGE_ANSWERS = {
     0: "チュートリアルの答え",
-    1: "1問目の答え",
-    2: "2問目の答え",
+    1: "りんご",
+    2: "みかん",
     3: "3問目の答え",
     4: "4問目の答え",
     5: "5問目の答え",
@@ -128,7 +128,7 @@ function updateBackgroundColor() {
 
 function updateAnswer() {
     const answerElement = document.querySelector('.answer-area p');
-    answerElement.textContent = `答え：${STAGE_ANSWERS[currentStage]}`;
+    answerElement.textContent = `${STAGE_ANSWERS[currentStage]}`;
 }
 
 //====================================================

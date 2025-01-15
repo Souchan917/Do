@@ -172,8 +172,8 @@ body.stage-9 { background-color: #5D4037; }  /* クリア: 茶色 */
 }
 
 .answer-area p {
-    color: black;
-    font-size: 24px;
+    color: rgb(255, 255, 255);
+    font-size: 30px;
     font-weight: bold;
 }
 
