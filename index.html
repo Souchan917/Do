@@ -38,7 +38,7 @@
 
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
             padding: 20px;
         }
 
@@ -182,7 +182,13 @@
         .answer-area {
             margin-top: 20px;
             text-align: center;
-            color: #4CAF50;
+            padding: 10px;
+        }
+
+        .answer-area p {
+            color: black;
+            font-size: 24px;
+            font-weight: bold;
         }
 
         @keyframes shakeAnimation {
@@ -232,7 +238,7 @@
         </div>
 
         <div class="answer-area">
-            <p>答え：答え1</p>
+            <p>チュートリアルの答え</p>
         </div>
     </div>
 
@@ -245,10 +251,7 @@
         let clearedStages = new Set();
         
         const HIRAGANA = [
-            '♪', '♪', '♪', '♪', 'こ',
-            'か', 'き', 'く', 'け', 'こ',
-            'か', 'き', 'く', 'け', 'こ',
-            'Dont fight it', 'Dont fight it', 'Dont fight it', 'Dont fight it', 'お',
+            'あ', 'い', 'う', 'え', 'お',
             'か', 'き', 'く', 'け', 'こ',
             'さ', 'し', 'す', 'せ', 'そ',
             'た', 'ち', 'つ', 'て', 'と',
@@ -429,11 +432,33 @@
         }
 
         // ステージ更新関数を修正
+        // ステージごとの答えを定義
+        const STAGE_ANSWERS = {
+            0: "チュートリアルの答え",
+            1: "1問目",
+            2: "2問目",
+            3: "3問目の答え",
+            4: "4問目の答え",
+            5: "5問目の答え",
+            6: "6問目の答え",
+            7: "7問目の答え",
+            8: "8問目の答え",
+            9: "おめでとうございます！"
+        };
+
+        // 答えを更新する関数
+        function updateAnswer() {
+            const answerElement = document.querySelector('.answer-area p');
+            answerElement.textContent = `${STAGE_ANSWERS[currentStage]}`;
+        }
+
+        // ステージ更新関数を修正
         function updateStageContent() {
             titleArea.textContent = STAGE_NAMES[currentStage];
             updatePuzzleImage();
             updateProblemElements();
-            updateBackgroundColor();  // 背景色の更新を追加
+            updateBackgroundColor();
+            updateAnswer();  // 答えの更新を追加
         }
 
         function updateProgress() {
