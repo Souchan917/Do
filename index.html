@@ -38,7 +38,7 @@
 
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             padding: 20px;
         }
 
@@ -264,13 +264,13 @@
             timer: {
                 x: 25, // 左から25%
                 y: 25, // 上から25%
-                size: 60, // 基準フォントサイズ
+                size: 16, // 基準フォントサイズ
                 id: 'timer-display'
             },
             hiragana: {
                 x: 50, // 左から50%
                 y: 50, // 上から50%
-                size: 100, // 基準フォントサイズ
+                size: 48, // 基準フォントサイズ
                 id: 'hiragana-display'
             }
         };
@@ -444,7 +444,10 @@
         const progressBarElement = document.getElementById('progressBar');
         let isDragging = false;
 
-        function updateTimeFromClick(event) {
+        function updateTimeFromClick(event, forceUpdate = false) {
+            // ドラッグ操作でない場合は処理をしない
+            if (!isDragging && !forceUpdate) return;
+
             const rect = progressBarElement.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const width = rect.width;
@@ -456,9 +459,16 @@
         }
 
         function handleTouchStart(event) {
-            isDragging = true;
-            updateTimeFromTouch(event);
-            progressBarElement.addEventListener('touchmove', handleTouchMove);
+            // ノブをタッチした場合のみドラッグを開始
+            const touch = event.touches[0];
+            const knob = document.getElementById('progressKnob');
+            const knobRect = knob.getBoundingClientRect();
+            
+            if (touch.clientX >= knobRect.left && touch.clientX <= knobRect.right &&
+                touch.clientY >= knobRect.top && touch.clientY <= knobRect.bottom) {
+                isDragging = true;
+                progressBarElement.addEventListener('touchmove', handleTouchMove);
+            }
         }
 
         function handleTouchMove(event) {
@@ -474,6 +484,8 @@
         }
 
         function updateTimeFromTouch(event) {
+            if (!isDragging) return;
+
             const touch = event.touches[0];
             const rect = progressBarElement.getBoundingClientRect();
             const x = touch.clientX - rect.left;
@@ -487,13 +499,19 @@
 
         // マウスイベントの設定
         progressBarElement.addEventListener('mousedown', (event) => {
-            isDragging = true;
-            updateTimeFromClick(event);
+            // ノブをクリックした場合のみドラッグを開始
+            const knob = document.getElementById('progressKnob');
+            const knobRect = knob.getBoundingClientRect();
+            
+            if (event.clientX >= knobRect.left && event.clientX <= knobRect.right &&
+                event.clientY >= knobRect.top && event.clientY <= knobRect.bottom) {
+                isDragging = true;
+            }
         });
 
         document.addEventListener('mousemove', (event) => {
             if (isDragging) {
-                updateTimeFromClick(event);
+                updateTimeFromClick(event, true);
             }
         });
 
