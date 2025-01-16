@@ -6,7 +6,7 @@ let isPlaying = false;
 let currentTime = 0;
 const totalDuration = 312; // 5:12 in seconds
 let currentStage = 0;
-const audio = new Audio('assets/audio/MT.mp3');
+const audio = new Audio('assets/audio/MH.mp3');
 let clearedStages = new Set();
 
 // DOM Elements
