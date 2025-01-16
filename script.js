@@ -174,11 +174,11 @@ const SEGMENT_DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const SEGMENT_SETTINGS = {
     x: 50,
     y: 50,
-    size: 48,
+    size: 30,
     id: 'segment-display'
 };
 
-const SEGMENT_CHANGE_INTERVAL = 60*4/170; // 0.5秒ごとに切り替え
+const SEGMENT_CHANGE_INTERVAL = 60*4/180; // 0.5秒ごとに切り替え
 //====================================================
 // システム制御（System Control）
 //====================================================
