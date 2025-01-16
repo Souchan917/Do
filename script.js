@@ -4,7 +4,7 @@
 // プレイヤー状態の管理
 let isPlaying = false;
 let currentTime = 0;
-const totalDuration = 135; // 5:12 in seconds
+const totalDuration = 132; // 5:12 in seconds
 let currentStage = 0;
 const audio = new Audio('assets/audio/ME.mp3');
 let clearedStages = new Set();
