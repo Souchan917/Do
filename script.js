@@ -7,7 +7,7 @@ let currentTime = 0;
 const totalDuration = 132; // 5:12 in seconds
 let currentStage = 0;
 const audio = new Audio('assets/audio/EBIMAYOHYPERBOUNCE.mp3');
-audio.volume = 0.05; // デフォルトの音量を30%に設定
+audio.volume = 0.01; // デフォルトの音量を30%に設定
 let clearedStages = new Set();
 
 // DOM Elements
