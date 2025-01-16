@@ -164,7 +164,7 @@ const HIRAGANA_SETTINGS = {
     id: 'hiragana-display'
 };
 
-let characterChangeInterval = 60*4/175/4;
+let characterChangeInterval = 60*4/180;
 let lastCharacterChangeTime = 0;
 //====================================================
 // ステージ4（セグメント）のギミック
@@ -178,7 +178,7 @@ const SEGMENT_SETTINGS = {
     id: 'segment-display'
 };
 
-const SEGMENT_CHANGE_INTERVAL = 60*4/170/4; // 0.5秒ごとに切り替え
+const SEGMENT_CHANGE_INTERVAL = 60*4/180; // 0.5秒ごとに切り替え
 //====================================================
 // システム制御（System Control）
 //====================================================
