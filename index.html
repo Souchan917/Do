@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    
     <div class="container">
+        
         <div class="problem-area" id="problemArea">
             <!-- 問題エリア内の要素は JavaScript で動的に追加 -->
         </div>
@@ -54,7 +56,70 @@
         </div>
 
     </div>
-
+    <div id="debugTools" style="position: fixed; bottom: 20px; left: 20px; background: rgba(0, 0, 0, 0.8); padding: 10px; border-radius: 5px; z-index: 1000; display: flex; flex-direction: column; gap: 5px;">
+        <div style="display: flex; gap: 5px;">
+            <select id="stageSelect" style="padding: 5px; width: 150px; height: 30px;">
+                <option value="0">チュートリアル</option>
+                <option value="1">ステージ1: りんご</option>
+                <option value="2">ステージ2: みかん</option>
+                <option value="3">ステージ3: つきみ</option>
+                <option value="4">ステージ4: セグメント</option>
+                <option value="5">ステージ5</option>
+                <option value="6">ステージ6</option>
+                <option value="7">ステージ7</option>
+                <option value="8">ステージ8</option>
+                <option value="9">ステージ9</option>
+                <option value="10">ステージ10</option>
+                <option value="11">ステージ11</option>
+                <option value="12">ステージ12</option>
+                <option value="13">ステージ13</option>
+                <option value="14">ステージ14</option>
+                <option value="15">ステージ15</option>
+                <option value="16">ステージ16</option>
+                <option value="17">ステージ17</option>
+                <option value="18">ステージ18</option>
+                <option value="19">ステージ19</option>
+                <option value="20">ステージ20</option>
+                <option value="21">ステージ21</option>
+                <option value="22">ステージ22</option>
+                <option value="23">ステージ23</option>
+                <option value="24">ステージ24</option>
+                <option value="25">エンディング</option>
+            </select>
+            <button id="debugJump" style="padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer; height: 30px;">移動</button>
+        </div>
+        <style>
+            #stageSelect {
+                /* スクロールバーのスタイリング */
+                scrollbar-width: thin;
+                scrollbar-color: #666 #333;
+            }
+            #stageSelect option {
+                /* オプションの高さを調整 */
+                padding: 5px;
+            }
+            /* Chromeなどのスクロールバーカスタマイズ */
+            #stageSelect::-webkit-scrollbar {
+                width: 8px;
+            }
+            #stageSelect::-webkit-scrollbar-track {
+                background: #333;
+            }
+            #stageSelect::-webkit-scrollbar-thumb {
+                background-color: #666;
+                border-radius: 4px;
+            }
+            /* ドロップダウンが開かれたときの最大高さ */
+            #stageSelect[size] {
+                max-height: 300px;
+            }
+        </style>
+        <div style="color: white; font-size: 12px;">
+            数字キー: 0-9 = Stage 0-9<br>
+            Shift + 数字キー: 1-9 = Stage 11-19<br>
+            Ctrl + 数字キー: 1-9 = Stage 21-29
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

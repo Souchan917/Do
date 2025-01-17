@@ -15,16 +15,49 @@ body {
 }
 
 /* ステージごとのテーマカラー用のクラス */
+/* ステージごとのテーマカラー用のクラス */
 body.stage-0 { background-color: #808080; }  /* チュートリアル: 灰色 */
-body.stage-1 { background-color: #8B0000; }  /* 1問目: 赤黒 */
-body.stage-2 { background-color: #D35400; }  /* 2問目: 暗いオレンジ */
-body.stage-3 { background-color: #B7950B; }  /* 3問目: 暗い黄色 */
-body.stage-4 { background-color: #186A3B; }  /* 4問目: 暗い緑 */
-body.stage-5 { background-color: #1F618D; }  /* 5問目: 青 */
-body.stage-6 { background-color: #1A237E; }  /* 6問目: 藍色 */
-body.stage-7 { background-color: #4A235A; }  /* 7問目: 紫色 */
-body.stage-8 { background-color: #212121; }  /* 8問目: 黒 */
-body.stage-9 { background-color: #5D4037; }  /* クリア: 茶色 */
+
+/* 1-3: 赤黒系 */
+body.stage-1 { background-color: #8B0000; }
+body.stage-2 { background-color: #800000; }
+body.stage-3 { background-color: #8B1A1A; }
+
+/* 4-6: オレンジ系 */
+body.stage-4 { background-color: #D35400; }
+body.stage-5 { background-color: #BA4A00; }
+body.stage-6 { background-color: #A04000; }
+
+/* 7-9: 暗い黄色系 */
+body.stage-7 { background-color: #B7950B; }
+body.stage-8 { background-color: #9A7D0A; }
+body.stage-9 { background-color: #7D6608; }
+
+/* 10-12: 緑系 */
+body.stage-10 { background-color: #186A3B; }
+body.stage-11 { background-color: #145A32; }
+body.stage-12 { background-color: #0B5345; }
+
+/* 13-15: 青系 */
+body.stage-13 { background-color: #1F618D; }
+body.stage-14 { background-color: #1A5276; }
+body.stage-15 { background-color: #154360; }
+
+/* 16-18: 藍色系 */
+body.stage-16 { background-color: #1A237E; }
+body.stage-17 { background-color: #151965; }
+body.stage-18 { background-color: #10174C; }
+
+/* 19-21: 紫色系 */
+body.stage-19 { background-color: #4A235A; }
+body.stage-20 { background-color: #3E1F4A; }
+body.stage-21 { background-color: #321B3B; }
+
+/* 22: 黒 */
+body.stage-22 { background-color: #000000; }
+
+/* 23: エンディング */
+body.stage-23 { background-color: #5D4037; }
 
 .container {
     width: 100%;
@@ -233,4 +266,19 @@ body.stage-9 { background-color: #5D4037; }  /* クリア: 茶色 */
 .rhythm-dot.selected {
     background-color: #000000;
     opacity: 1;
+}
+
+.problem-element {
+    position: absolute;
+    transform-origin: center center;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.problem-element img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
