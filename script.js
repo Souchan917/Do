@@ -53,7 +53,7 @@ const STAGE_CONFIGS = {
         settings: {
             x: 50,
             y: 50,
-            size: 60,
+            size: 100,
             changeInterval: 60 * 4 / 175 / 4,
             characters: HIRAGANA
         }
