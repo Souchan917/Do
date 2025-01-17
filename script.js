@@ -6,12 +6,13 @@ let isPlaying = false;
 let currentTime = 0;
 const totalDuration = 254; // 5:12 in seconds
 let currentStage = 0;
-const audio = new Audio('assets/audio/GOODFORTUNE Extended.mp3');
+// const audio = new Audio('assets/audio/GOODFORTUNE Extended.mp3');
+const audio = new Audio('assets/audio/Shimokita.mp3');
 audio.volume = 0.3; // デフォルトの音量を30%に設定
 let clearedStages = new Set();
 
 // リズム関連の定数
-const BPM = 170;
+const BPM = 175;
 const BEATS_PER_SECOND = BPM / 60;
 
 // DOM Elements
@@ -39,7 +40,7 @@ const PUZZLE_IMAGES = {
     0: null,
     1: "assets/images/puzzles/puzzle1.png",
     2: "assets/images/puzzles/puzzle2.png",
-    3: "assets/images/puzzles/puzzle3.png",
+    3: "assets/images/puzzles/puzzlemoon.png",
     4: "assets/images/puzzles/puzzle4.png",
     5: "assets/images/puzzles/puzzle5.png",
     6: "assets/images/puzzles/puzzle6.png",
@@ -76,7 +77,7 @@ const stageSettings = {
 
 // 正解パターン（内部でのみ使用）
 const correctPatterns = {
-    0: [2, 4],           // チュートリアル
+    0: [1, 2, 3, 4],           // チュートリアル
     1: [2, 4, 6, 8],     // 1問目
     2: [1, 3, 5, 7],     // 2問目
     3: [4, 8, 12, 16],   // 3問目
