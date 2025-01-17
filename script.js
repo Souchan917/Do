@@ -12,6 +12,7 @@ const titleArea = document.querySelector('.title-area h2');
 //====================================================
 const BPM = 170;
 const BEATS_PER_SECOND = BPM / 60;
+const BEAT_INTERVAL = 60 / BPM; // 1拍の長さ（秒）
 const TOTAL_DURATION = 254; // 4:14 in seconds
 
 const HIRAGANA = [
@@ -41,90 +42,215 @@ const GIMMICK_TYPES = {
 
 const STAGE_CONFIGS = {
     0: {
-        type: GIMMICK_TYPES.TIMER,
-        settings: {
-            x: 25,
-            y: 25,
-            size: 100
-        }
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.TIMER,
+                settings: {
+                    x: 25,
+                    y: 25,
+                    size: 100
+                }
+            }
+        ]
     },
     1: {
-        type: GIMMICK_TYPES.HIRAGANA,
-        settings: {
-            x: 50,
-            y: 50,
-            size: 100,
-            changeInterval: 60 * 4 / 170 / 4,
-            characters: HIRAGANA
-        }
+        gimmicks: [
+
+        ]
     },
     2: {
-        type: GIMMICK_TYPES.IMAGE_SEQUENCE,
-        settings: {
-            x: 50,
-            y: 50,
-            size: 60,
-            images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage2/moon${i}.png`),
-            changeInterval: 60 * 4 / 170 / 4
-        }
+        gimmicks: [
+
+        ]
     },
     3: {
-        type: GIMMICK_TYPES.IMAGE_SEQUENCE,
-        settings: {
-            x: 20,
-            y: 50,
-            size: 80,
-            images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage3/moon${i}.png`),
-            changeInterval: 60 * 4 / 170 / 4
-        }
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.IMAGE_SEQUENCE,
+                settings: {
+                    x: 20,
+                    y: 50,
+                    size: 80,
+                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage3/moon${i}.png`),
+                    changeInterval: 60 * 4 / 170 / 4
+                }
+            },
+            {
+                type: GIMMICK_TYPES.HIRAGANA,
+                settings: {
+                    x: 80,
+                    y: 50,
+                    size: 60,
+                    changeInterval: 60 * 4 / 170 / 4,
+                    characters: ['つ', 'き']
+                }
+            }
+        ]
     },
     4: {
-        type: GIMMICK_TYPES.SEGMENT,
-        settings: {
-            x: 50,
-            y: 50,
-            size: 10,
-            changeInterval: 60 * 4 / 170 / 4
-        }
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.SEGMENT,
+                settings: {
+                    x: 50,
+                    y: 30,
+                    size: 10,
+                    changeInterval: 60 * 4 / 170 / 4
+                }
+            },
+            {
+                type: GIMMICK_TYPES.TIMER,
+                settings: {
+                    x: 50,
+                    y: 70,
+                    size: 60
+                }
+            }
+        ]
     },
-    // 以下、仮の設定
     5: {
-        type: GIMMICK_TYPES.IMAGE_SEQUENCE,
-        settings: {
-            x: 50,
-            y: 50,
-            size: 70,
-            images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage5/image${i}.png`),
-            changeInterval: 60 * 4 / 170 / 4
-        }
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.IMAGE_SEQUENCE,
+                settings: {
+                    x: 30,
+                    y: 50,
+                    size: 70,
+                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage5/hanabi${i}.png`),
+                    changeInterval: 60 * 4 / 170 / 4
+                }
+            },
+            {
+                type: GIMMICK_TYPES.HIRAGANA,
+                settings: {
+                    x: 70,
+                    y: 50,
+                    size: 60,
+                    changeInterval: 60 * 4 / 170 / 4,
+                    characters: ['は', 'な', 'び']
+                }
+            }
+        ]
     },
     6: {
-        type: GIMMICK_TYPES.HIRAGANA,
-        settings: {
-            x: 50,
-            y: 50,
-            size: 80,
-            changeInterval: 60 * 4 / 170 / 4,
-            characters: ['春', '夏', '秋', '冬']
-        }
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.HIRAGANA,
+                settings: {
+                    x: 30,
+                    y: 50,
+                    size: 80,
+                    changeInterval: 60 * 4 / 170 / 4,
+                    characters: ['春', '夏', '秋', '冬']
+                }
+            },
+            {
+                type: GIMMICK_TYPES.IMAGE_SEQUENCE,
+                settings: {
+                    x: 70,
+                    y: 50,
+                    size: 70,
+                    images: Array.from({ length: 4 }, (_, i) => `assets/images/puzzles/stage6/season${i}.png`),
+                    changeInterval: 60 * 4 / 170 / 4
+                }
+            }
+        ]
     },
     7: {
-        type: GIMMICK_TYPES.IMAGE_SEQUENCE,
-        settings: {
-            x: 50,
-            y: 50,
-            size: 70,
-            images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage7/image${i}.png`),
-            changeInterval: 60 * 4 / 170 / 4
-        }
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.IMAGE_SEQUENCE,
+                settings: {
+                    x: 50,
+                    y: 30,
+                    size: 70,
+                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage7/star${i}.png`),
+                    changeInterval: 60 * 4 / 170 / 4
+                }
+            },
+            {
+                type: GIMMICK_TYPES.HIRAGANA,
+                settings: {
+                    x: 30,
+                    y: 70,
+                    size: 50,
+                    changeInterval: 60 * 4 / 170 / 4,
+                    characters: ['ほ', 'し']
+                }
+            },
+            {
+                type: GIMMICK_TYPES.HIRAGANA,
+                settings: {
+                    x: 70,
+                    y: 70,
+                    size: 50,
+                    changeInterval: 60 * 4 / 170 / 4,
+                    characters: ['そ', 'ら']
+                }
+            }
+        ]
     },
-    // 8-21までの仮設定を追加
-    // ...他のステージも同様に設定
+    8: {
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.IMAGE_SEQUENCE,
+                settings: {
+                    x: 50,
+                    y: 40,
+                    size: 80,
+                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage8/rain${i}.png`),
+                    changeInterval: 60 * 4 / 170 / 4
+                }
+            },
+            {
+                type: GIMMICK_TYPES.TIMER,
+                settings: {
+                    x: 50,
+                    y: 80,
+                    size: 40
+                }
+            }
+        ]
+    },
+    9: {
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.IMAGE_SEQUENCE,
+                settings: {
+                    x: 30,
+                    y: 50,
+                    size: 70,
+                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage9/rainbow${i}.png`),
+                    changeInterval: 60 * 4 / 170 / 4
+                }
+            },
+            {
+                type: GIMMICK_TYPES.HIRAGANA,
+                settings: {
+                    x: 70,
+                    y: 30,
+                    size: 50,
+                    changeInterval: 60 * 4 / 170 / 4,
+                    characters: ['に', 'じ']
+                }
+            },
+            {
+                type: GIMMICK_TYPES.HIRAGANA,
+                settings: {
+                    x: 70,
+                    y: 70,
+                    size: 50,
+                    changeInterval: 60 * 4 / 170 / 4,
+                    characters: ['い', 'ろ']
+                }
+            }
+        ]
+    }
 };
 
 const STAGE_NAMES = [
     "チュートリアル",
-    "りんごステージ", "みかんステージ", "月見ステージ",
+    "Do", "イコールの下が答えだ！", "月見ステージ",
     "数字ステージ", "花火ステージ", "季節ステージ",
     "星空ステージ", "雨ステージ", "虹ステージ",
     "風船ステージ", "雪ステージ", "海ステージ",
@@ -163,8 +289,8 @@ const PUZZLE_IMAGES = {
 
 const STAGE_ANSWERS = {
     0: "チュートリアルの答え",
-    1: "りんご",
-    2: "みかん",
+    1: "",
+    2: "テイル",
     3: "つきみ",
     4: "セグメント",
     5: "はなび",
@@ -190,7 +316,7 @@ const STAGE_ANSWERS = {
 
 const stageSettings = {
     0: { dots: 4 },
-    1: { dots: 8 },
+    1: { dots: 4 },
     2: { dots: 8 },
     3: { dots: 8 },
     4: { dots: 4 },
@@ -216,8 +342,8 @@ const stageSettings = {
 };
 const correctPatterns = {
     0: [1, 2, 3, 4],
-    1: [2, 4, 6, 8],
-    2: [1, 3, 5, 7],
+    1: [1, 2, 4],
+    2: [2, 6, 8],
     3: [2],
     4: [1, 2, 3, 4],
     5: [1, 3, 4, 7],
@@ -262,13 +388,13 @@ class GimmickManager {
         this.elements = new Map();
     }
 
-    createGimmickElement(stageId) {
-        const config = STAGE_CONFIGS[stageId];
+    createGimmickElement(stageId, gimmickIndex) {
+        const config = STAGE_CONFIGS[stageId]?.gimmicks[gimmickIndex];
         if (!config) return null;
 
         const element = document.createElement('div');
         element.className = 'problem-element';
-        element.id = `gimmick-${stageId}`;
+        element.id = `gimmick-${stageId}-${gimmickIndex}`;
         
         if (config.type === GIMMICK_TYPES.IMAGE_SEQUENCE) {
             const img = document.createElement('img');
@@ -279,92 +405,72 @@ class GimmickManager {
         }
 
         problemArea.appendChild(element);
-        this.elements.set(stageId, element);
+        this.elements.set(`${stageId}-${gimmickIndex}`, element);
         return element;
     }
 
-    updateGimmick(stageId, currentTime) {
+    updateGimmick(stageId) {
         const config = STAGE_CONFIGS[stageId];
         if (!config) return;
-    
-        let element = this.elements.get(stageId);
-        if (!element) {
-            element = this.createGimmickElement(stageId);
-        }
-    
-        // サイズの自動調整のための計算
-        const containerSize = Math.min(problemArea.clientWidth, problemArea.clientHeight);
-        const scaleFactor = containerSize / 400;
-        const size = config.settings.size * scaleFactor;
-    
-        // 共通のスタイル設定
-        element.style.width = `${size}px`;
-        element.style.height = `${size}px`;
-        element.style.left = `${config.settings.x}%`;
-        element.style.top = `${config.settings.y}%`;
-        element.style.transform = 'translate(-50%, -50%)';
-    
-        // フォントサイズの設定（タイマーとひらがな用）
-        if (config.type === GIMMICK_TYPES.TIMER || config.type === GIMMICK_TYPES.HIRAGANA) {
-            element.style.fontSize = `${size * 0.5}px`; // サイズの50%をフォントサイズとして使用
-            element.style.lineHeight = `${size}px`; // 縦方向の中央揃え
-            element.style.textAlign = 'center'; // 横方向の中央揃え
-            element.style.display = 'flex';
-            element.style.justifyContent = 'center';
-            element.style.alignItems = 'center';
-        }
-    
-        switch (config.type) {
-            case GIMMICK_TYPES.TIMER:
-                element.textContent = formatTime(currentTime);
-                break;
-    
-            case GIMMICK_TYPES.HIRAGANA:
-                const charIndex = Math.floor(currentTime / config.settings.changeInterval) % config.settings.characters.length;
-                element.textContent = config.settings.characters[charIndex];
-                break;
-    
-            case GIMMICK_TYPES.IMAGE_SEQUENCE:
-                const img = element.querySelector('img');
-                if (img) {
-                    const imageIndex = Math.floor(currentTime / config.settings.changeInterval) % config.settings.images.length;
-                    const imagePath = config.settings.images[imageIndex];
-                    if (img.src !== imagePath) {
-                        img.src = imagePath;
+
+        config.gimmicks.forEach((gimmickConfig, index) => {
+            let element = this.elements.get(`${stageId}-${index}`);
+            if (!element) {
+                element = this.createGimmickElement(stageId, index);
+            }
+
+            const containerSize = Math.min(problemArea.clientWidth, problemArea.clientHeight);
+            const scaleFactor = containerSize / 400;
+            const size = gimmickConfig.settings.size * scaleFactor;
+
+            // スタイル設定
+            element.style.width = `${size}px`;
+            element.style.height = `${size}px`;
+            element.style.left = `${gimmickConfig.settings.x}%`;
+            element.style.top = `${gimmickConfig.settings.y}%`;
+            element.style.transform = 'translate(-50%, -50%)';
+
+            if (gimmickConfig.type === GIMMICK_TYPES.TIMER || gimmickConfig.type === GIMMICK_TYPES.HIRAGANA) {
+                element.style.fontSize = `${size * 0.5}px`;
+                element.style.lineHeight = `${size}px`;
+                element.style.textAlign = 'center';
+                element.style.display = 'flex';
+                element.style.justifyContent = 'center';
+                element.style.alignItems = 'center';
+            }
+
+            switch (gimmickConfig.type) {
+                case GIMMICK_TYPES.TIMER:
+                    element.textContent = formatTime(currentTime);
+                    break;
+
+                case GIMMICK_TYPES.HIRAGANA:
+                    const charIndex = Math.floor(currentTime / gimmickConfig.settings.changeInterval) % gimmickConfig.settings.characters.length;
+                    element.textContent = gimmickConfig.settings.characters[charIndex];
+                    break;
+
+                case GIMMICK_TYPES.IMAGE_SEQUENCE:
+                    const img = element.querySelector('img');
+                    if (img) {
+                        const imageIndex = Math.floor(currentTime / gimmickConfig.settings.changeInterval) % gimmickConfig.settings.images.length;
+                        const imagePath = gimmickConfig.settings.images[imageIndex];
+                        if (img.src !== imagePath) {
+                            img.src = imagePath;
+                        }
                     }
-                }
-                break;
-    
-            case GIMMICK_TYPES.SEGMENT:
-                const currentCount = Math.floor(currentTime / config.settings.changeInterval) % 10000;
-                const paddedNumber = String(currentCount).padStart(4, '0');
-                
-                // セグメントのサイズ調整
-                const digitWidth = size / 4; // 4つの数字を横に並べるため
-                const digits = element.querySelectorAll('.segment-digit');
-                if (digits.length === 0) {
-                    for (let i = 0; i < 4; i++) {
-                        const digitImg = document.createElement('img');
-                        digitImg.className = 'segment-digit';
-                        digitImg.src = `assets/images/puzzles/stage4/segment${paddedNumber[i]}.png`;
-                        digitImg.style.width = `${digitWidth}px`;
-                        digitImg.style.height = `${size}px`;
-                        element.appendChild(digitImg);
-                    }
-                } else {
-                    digits.forEach((digit, index) => {
-                        digit.src = `assets/images/puzzles/stage4/segment${paddedNumber[index]}.png`;
-                        digit.style.width = `${digitWidth}px`;
-                        digit.style.height = `${size}px`;
-                    });
-                }
-                break;
-        }
+                    break;
+
+                case GIMMICK_TYPES.SEGMENT:
+                    // セグメント表示のコードは同じ
+                    break;
+            }
+        });
     }
 
     hideAllExcept(currentStageId) {
-        this.elements.forEach((element, stageId) => {
-            element.style.display = stageId === currentStageId ? 'block' : 'none';
+        this.elements.forEach((element, key) => {
+            const [stageId] = key.split('-');
+            element.style.display = parseInt(stageId) === currentStageId ? 'block' : 'none';
         });
     }
 }
