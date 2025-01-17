@@ -54,7 +54,7 @@ const STAGE_CONFIGS = {
             x: 50,
             y: 50,
             size: 100,
-            changeInterval: 60 * 4 / 180 / 4,
+            changeInterval: 60 * 4 / 170 / 4,
             characters: HIRAGANA
         }
     },
@@ -65,7 +65,7 @@ const STAGE_CONFIGS = {
             y: 50,
             size: 60,
             images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage2/mikan${i}.png`),
-            changeInterval: 60 * 4 / 180 / 4
+            changeInterval: 60 * 4 / 170 / 4
         }
     },
     3: {
