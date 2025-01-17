@@ -10,7 +10,7 @@ const titleArea = document.querySelector('.title-area h2');
 //====================================================
 // 定数定義
 //====================================================
-const BPM = 175;
+const BPM = 180;
 const BEATS_PER_SECOND = BPM / 60;
 const TOTAL_DURATION = 254; // 4:14 in seconds
 
@@ -54,7 +54,7 @@ const STAGE_CONFIGS = {
             x: 50,
             y: 50,
             size: 100,
-            changeInterval: 60 * 4 / 175 / 4,
+            changeInterval: 60 * 4 / 180 / 4,
             characters: HIRAGANA
         }
     },
@@ -65,7 +65,7 @@ const STAGE_CONFIGS = {
             y: 50,
             size: 60,
             images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage2/mikan${i}.png`),
-            changeInterval: 60 * 4 / 175 / 4
+            changeInterval: 60 * 4 / 180 / 4
         }
     },
     3: {
@@ -75,7 +75,7 @@ const STAGE_CONFIGS = {
             y: 50,
             size: 80,
             images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage3/moon${i}.png`),
-            changeInterval: 60 * 4 / 175 / 4
+            changeInterval: 60 * 4 / 180 / 4
         }
     },
     4: {
@@ -84,7 +84,7 @@ const STAGE_CONFIGS = {
             x: 50,
             y: 50,
             size: 10,
-            changeInterval: 60 * 4 / 170 / 4
+            changeInterval: 60 * 4 / 180 / 4
         }
     },
     // 以下、仮の設定
@@ -95,7 +95,7 @@ const STAGE_CONFIGS = {
             y: 50,
             size: 70,
             images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage5/image${i}.png`),
-            changeInterval: 60 * 4 / 175 / 4
+            changeInterval: 60 * 4 / 180 / 4
         }
     },
     6: {
@@ -104,7 +104,7 @@ const STAGE_CONFIGS = {
             x: 50,
             y: 50,
             size: 80,
-            changeInterval: 60 * 4 / 175 / 4,
+            changeInterval: 60 * 4 / 180 / 4,
             characters: ['春', '夏', '秋', '冬']
         }
     },
@@ -115,7 +115,7 @@ const STAGE_CONFIGS = {
             y: 50,
             size: 70,
             images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage7/image${i}.png`),
-            changeInterval: 60 * 4 / 175 / 4
+            changeInterval: 60 * 4 / 180 / 4
         }
     },
     // 8-21までの仮設定を追加
