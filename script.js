@@ -44,14 +44,6 @@ const GIMMICK_TYPES = {
 const STAGE_CONFIGS = {
     0: {
         gimmicks: [
-            {
-                type: GIMMICK_TYPES.TIMER,
-                settings: {
-                    x: 25,
-                    y: 25,
-                    size: 100
-                }
-            }
         ]
     },
     1: {
@@ -249,7 +241,7 @@ const STAGE_NAMES = [
 ];
 
 const PUZZLE_IMAGES = {
-    0: null,
+    0: "assets/images/puzzles/puzzle0.png",
     1: "assets/images/puzzles/puzzle1.png",
     2: "assets/images/puzzles/puzzle2.png",
     3: "assets/images/puzzles/puzzle999.png",
