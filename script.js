@@ -10,6 +10,10 @@ const audio = new Audio('assets/audio/GOODFORTUNE Extended.mp3');
 audio.volume = 0.3; // デフォルトの音量を30%に設定
 let clearedStages = new Set();
 
+// リズム関連の定数
+const BPM = 170;
+const BEATS_PER_SECOND = BPM / 60;
+
 // DOM Elements
 const playButton = document.getElementById('playButton');
 const playIcon = document.getElementById('playIcon');
@@ -21,7 +25,9 @@ const problemArea = document.getElementById('problemArea');
 const titleArea = document.querySelector('.title-area h2');
 const progressBarElement = document.getElementById('progressBar');
 
-// ステージ基本情報
+//====================================================
+// ステージ関連の設定
+//====================================================
 const STAGE_NAMES = [
     "チュートリアル",
     "1問目", "2問目", "3問目", "4問目",
@@ -29,19 +35,6 @@ const STAGE_NAMES = [
     "クリア"
 ];
 
-const stageClearConditions = {
-    0: { min: 0, max: totalDuration },
-    1: { min: 10, max: 220 },
-    2: { min: 10, max: 240 },
-    3: { min: 10, max: 260 },
-    4: { min: 10, max: 280 },
-    5: { min: 10, max: 200 },
-    6: { min: 10, max: 220 },
-    7: { min: 10, max: 240 },
-    8: { min: 10, max: 260 }
-};
-
-// 問題画像の設定
 const PUZZLE_IMAGES = {
     0: null,
     1: "assets/images/puzzles/puzzle1.png",
@@ -55,7 +48,6 @@ const PUZZLE_IMAGES = {
     9: "assets/images/puzzles/clear.png"
 };
 
-// ステージの答え
 const STAGE_ANSWERS = {
     0: "チュートリアル",
     1: "りんご",
@@ -69,68 +61,41 @@ const STAGE_ANSWERS = {
     9: "おめでとうございます！"
 };
 
-// 共通ユーティリティ関数
-function createProblemElement(settings) {
-    const element = document.createElement('div');
-    element.id = settings.id;
-    element.className = 'problem-element';
-    problemArea.appendChild(element);
-    return element;
-}
+// ステージごとのドット設定
+const stageSettings = {
+    0: { dots: 4 },  // チュートリアル
+    1: { dots: 8 },  // 1問目
+    2: { dots: 8 },  // 2問目
+    3: { dots: 16 }, // 3問目
+    4: { dots: 4 },  // 4問目
+    5: { dots: 8 },  // 5問目
+    6: { dots: 16 }, // 6問目
+    7: { dots: 8 },  // 7問目
+    8: { dots: 4 }   // 8問目
+};
 
-function updateElementPosition(element, settings) {
-    const containerWidth = problemArea.clientWidth;
-    const containerHeight = problemArea.clientHeight;
-    const scaleFactor = Math.min(containerWidth, containerHeight) / 400;
-    const fontSize = settings.size * scaleFactor;
-    
-    element.style.fontSize = `${fontSize}px`;
-    element.style.left = `${settings.x}%`;
-    element.style.top = `${settings.y}%`;
-    element.style.transform = 'translate(-50%, -50%)';
-}
+// 正解パターン（内部でのみ使用）
+const correctPatterns = {
+    0: [2, 4],           // チュートリアル
+    1: [2, 4, 6, 8],     // 1問目
+    2: [1, 3, 5, 7],     // 2問目
+    3: [4, 8, 12, 16],   // 3問目
+    4: [1, 2, 3, 4],     // 4問目
+    5: [1, 3, 4, 7],     // 5問目
+    6: [4, 8, 12, 16],   // 6問目
+    7: [2, 4, 6, 8],     // 7問目
+    8: [1, 2, 3, 4]      // 8問目
+};
 
-function updatePuzzleImage() {
-    let existingImage = problemArea.querySelector('.puzzle-image');
-    if (existingImage) {
-        existingImage.remove();
-    }
+//====================================================
+// リズム判定用の状態管理を更新
+//====================================================
+let currentBeatProgress = 0;
+let selectedBeats = new Set();      // プレイヤーが選択した拍
+let lastBeat = -1;
+let isLoopComplete = false;         // 1ループが完了したかどうか
 
-    const imagePath = PUZZLE_IMAGES[currentStage];
-    if (imagePath) {
-        const imageElement = document.createElement('img');
-        imageElement.src = imagePath;
-        imageElement.className = 'puzzle-image';
-        imageElement.alt = `Puzzle ${currentStage}`;
-        problemArea.insertBefore(imageElement, problemArea.firstChild);
-    }
-}
 
-function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
-function formatTimeWithMS(seconds) {
-    return seconds.toFixed(2);
-}
-
-function shakeNextButton() {
-    nextButton.classList.add('shake');
-    setTimeout(() => {
-        nextButton.classList.remove('shake');
-    }, 500);
-}
-
-function updateBackgroundColor() {
-    document.body.className = `stage-${currentStage}`;
-}
-
-function updateAnswer() {
-    const answerElement = document.querySelector('.answer-area p');
-    answerElement.textContent = `${STAGE_ANSWERS[currentStage]}`;
-}
 
 //====================================================
 // ステージ0（チュートリアル）のギミック
@@ -180,97 +145,147 @@ const SEGMENT_SETTINGS = {
 };
 
 const SEGMENT_CHANGE_INTERVAL = 60*4/170/4; // 0.5秒ごとに切り替え
+
+
+
 //====================================================
-// システム制御（System Control）
+// 共通ユーティリティ関数
 //====================================================
-// 問題エリアの要素を更新
-function updateProblemElements() {
-    const timerElement = document.getElementById(TIMER_SETTINGS.id) || 
-                        createProblemElement(TIMER_SETTINGS);
-    const hiraganaElement = document.getElementById(HIRAGANA_SETTINGS.id) || 
-                            createProblemElement(HIRAGANA_SETTINGS);
-    const segmentElement = document.getElementById(SEGMENT_SETTINGS.id) ||
-                            createProblemElement(SEGMENT_SETTINGS);
+function createProblemElement(settings) {
+    const element = document.createElement('div');
+    element.id = settings.id;
+    element.className = 'problem-element';
+    problemArea.appendChild(element);
+    return element;
+}
 
-    // セグメント表示のための初期化
-    if (currentStage === 4 && !segmentElement.hasChildNodes()) {
-        const displayDiv = document.createElement('div');
-        displayDiv.style.display = 'flex';
-        displayDiv.style.gap = '5px';
-        displayDiv.style.justifyContent = 'center';
-
-        // 4桁分のセグメント画像を作成
-        for (let i = 0; i < 4; i++) {
-            const digitImg = document.createElement('img');
-            digitImg.src = `assets/images/puzzles/stage4/segment0.png`;
-            digitImg.className = 'segment-digit';
-            displayDiv.appendChild(digitImg);
-        }
-        
-        segmentElement.appendChild(displayDiv);
-    }
-
-    if (currentStage === 0) {
-        timerElement.style.display = 'block';
-        hiraganaElement.style.display = 'none';
-        segmentElement.style.display = 'none';
-        timerElement.textContent = formatTimeWithMS(currentTime);
-    } 
-    else if (currentStage === 1) {
-        timerElement.style.display = 'none';
-        hiraganaElement.style.display = 'block';
-        segmentElement.style.display = 'none';
-        const currentIndex = Math.floor(currentTime / characterChangeInterval) % HIRAGANA.length;
-        hiraganaElement.textContent = HIRAGANA[currentIndex];
-    }
-    else if (currentStage === 4) {
-        timerElement.style.display = 'none';
-        hiraganaElement.style.display = 'none';
-        segmentElement.style.display = 'block';
-
-        // カウントアップの計算
-        const currentCount = Math.floor(currentTime / SEGMENT_CHANGE_INTERVAL) % 10000;
-        const paddedNumber = String(currentCount).padStart(4, '0');
-        
-        // 各桁の更新
-        const digits = segmentElement.querySelectorAll('.segment-digit');
-        digits.forEach((digit, index) => {
-            digit.src = `assets/images/puzzles/stage4/segment${paddedNumber[index]}.png`;
-        });
-    }
-    else {
-        timerElement.style.display = 'none';
-        hiraganaElement.style.display = 'none';
-        segmentElement.style.display = 'none';
-    }
-
-    updateElementPosition(timerElement, TIMER_SETTINGS);
-    updateElementPosition(hiraganaElement, HIRAGANA_SETTINGS);
-    updateElementPosition(segmentElement, SEGMENT_SETTINGS);
+function updateElementPosition(element, settings) {
+    const containerWidth = problemArea.clientWidth;
+    const containerHeight = problemArea.clientHeight;
+    const scaleFactor = Math.min(containerWidth, containerHeight) / 400;
+    const fontSize = settings.size * scaleFactor;
     
-    // セグメントのサイズ調整
-    if (currentStage === 4) {
-        const containerWidth = problemArea.clientWidth;
-        const containerHeight = problemArea.clientHeight;
-        const scaleFactor = Math.min(containerWidth, containerHeight) / 400;
-        const digitSize = SEGMENT_SETTINGS.size * scaleFactor;
-        
-        const digits = segmentElement.querySelectorAll('.segment-digit');
-        digits.forEach(digit => {
-            digit.style.width = `${digitSize}px`;
-            digit.style.height = 'auto';
-        });
+    element.style.fontSize = `${fontSize}px`;
+    element.style.left = `${settings.x}%`;
+    element.style.top = `${settings.y}%`;
+    element.style.transform = 'translate(-50%, -50%)';
+}
+
+function updatePuzzleImage() {
+    let existingImage = problemArea.querySelector('.puzzle-image');
+    if (existingImage) {
+        existingImage.remove();
+    }
+
+    const imagePath = PUZZLE_IMAGES[currentStage];
+    if (imagePath) {
+        const imageElement = document.createElement('img');
+        imageElement.src = imagePath;
+        imageElement.className = 'puzzle-image';
+        imageElement.alt = `Puzzle ${currentStage}`;
+        problemArea.insertBefore(imageElement, problemArea.firstChild);
     }
 }
 
-function updateStageContent() {
-    titleArea.textContent = STAGE_NAMES[currentStage];
-    updatePuzzleImage();
-    updateProblemElements();
-    updateBackgroundColor();
-    updateAnswer();
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
+function shakeNextButton() {
+    nextButton.classList.add('shake');
+    setTimeout(() => {
+        nextButton.classList.remove('shake');
+    }, 500);
+}
+
+function updateBackgroundColor() {
+    document.body.className = `stage-${currentStage}`;
+}
+
+function updateAnswer() {
+    const answerElement = document.querySelector('.answer-area p');
+    answerElement.textContent = `${STAGE_ANSWERS[currentStage]}`;
+}
+
+//====================================================
+// リズムドット関連の機能
+//====================================================
+function createRhythmDots() {
+    const dotsContainer = document.getElementById('rhythmDots');
+    if (!dotsContainer) return;
+    
+    dotsContainer.innerHTML = '';
+    const dotCount = stageSettings[currentStage]?.dots || 4;
+    
+    for (let i = 0; i < dotCount; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'rhythm-dot';
+        dotsContainer.appendChild(dot);
+    }
+}
+
+function updateRhythmDots() {
+    if (!isPlaying) return;
+    
+    const dotsContainer = document.getElementById('rhythmDots');
+    if (!dotsContainer) return;
+    
+    const dotCount = stageSettings[currentStage]?.dots || 4;
+    const oldBeat = lastBeat;
+    currentBeatProgress = (currentTime * BEATS_PER_SECOND) % dotCount;
+    const currentBeat = Math.floor(currentBeatProgress) + 1;
+    
+    // ループの完了を検出
+    if (currentBeat < oldBeat) {
+        // 1ループ完了時の正誤判定
+        checkRhythmPattern();
+        selectedBeats.clear();  // ここでリセット
+        isLoopComplete = true;
+    } else {
+        isLoopComplete = false;
+    }
+    
+    lastBeat = currentBeat;
+    
+    // ドットの表示を更新
+    const dots = dotsContainer.querySelectorAll('.rhythm-dot');
+    dots.forEach((dot, index) => {
+        const beatNumber = index + 1;
+        const isCurrentBeat = beatNumber === currentBeat;
+        const isSelected = selectedBeats.has(beatNumber);
+        
+        dot.classList.toggle('active', isCurrentBeat);
+        dot.classList.toggle('selected', isSelected);
+    });
+}
+
+
+// checkRhythmPatternも修正
+function checkRhythmPattern() {
+    const pattern = correctPatterns[currentStage];
+    
+    // 選択された拍の数と正解パターンの数が一致するかチェック
+    if (selectedBeats.size !== pattern.length) {
+        selectedBeats.clear();  // サイズが合わない場合もリセット
+        return;
+    }
+    
+    // すべての正解の拍が選択されているかチェック
+    const allBeatsCorrect = pattern.every(beat => selectedBeats.has(beat));
+    
+    if (allBeatsCorrect) {
+        clearedStages.add(currentStage);
+        currentStage++;
+        updateStageContent();
+    } else {
+        selectedBeats.clear();  // 不正解の場合、選択をリセット
+    }
+}
+//====================================================
+// システム制御
+//====================================================
 function updateProgress() {
     const progress = (currentTime / totalDuration) * 100;
     document.getElementById('progress').style.width = `${progress}%`;
@@ -278,7 +293,28 @@ function updateProgress() {
     currentTimeDisplay.textContent = formatTime(currentTime);
 }
 
-// シークバーの制御
+function updateStageContent() {
+    titleArea.textContent = STAGE_NAMES[currentStage];
+    updatePuzzleImage();
+    updateBackgroundColor();
+    updateAnswer();
+    createRhythmDots();
+    selectedBeats.clear();  // 選択状態をリセット
+    isLoopComplete = false;
+}
+
+function update() {
+    if (isPlaying) {
+        currentTime = audio.currentTime;
+        updateProgress();
+        updateRhythmDots();
+    }
+    requestAnimationFrame(update);
+}
+
+//====================================================
+// シークバー制御
+//====================================================
 let isDragging = false;
 
 function updateTimeFromClick(event, forceUpdate = false) {
@@ -335,7 +371,6 @@ function updateTimeFromTouch(event) {
 //====================================================
 // イベントリスナー
 //====================================================
-// マウスイベント
 progressBarElement.addEventListener('mousedown', (event) => {
     const knob = document.getElementById('progressKnob');
     const knobRect = knob.getBoundingClientRect();
@@ -356,11 +391,9 @@ document.addEventListener('mouseup', () => {
     isDragging = false;
 });
 
-// タッチイベント
 progressBarElement.addEventListener('touchstart', handleTouchStart);
 progressBarElement.addEventListener('touchend', handleTouchEnd);
 
-// コントロールボタン
 playButton.addEventListener('click', () => {
     if (isPlaying) {
         audio.pause();
@@ -372,13 +405,9 @@ playButton.addEventListener('click', () => {
     isPlaying = !isPlaying;
 });
 
-// オーディオイベント
 audio.addEventListener('ended', () => {
-    // 時間をリセット
     currentTime = 0;
     audio.currentTime = 0;
-    
-    // 再生を継続
     audio.play();
 });
 
@@ -389,42 +418,33 @@ prevButton.addEventListener('click', () => {
     }
 });
 
+// 次へボタンの処理を修正
 nextButton.addEventListener('click', () => {
     if (currentStage === 9) return;
-
-    const condition = stageClearConditions[currentStage];
-    if (clearedStages.has(currentStage) || 
-        (currentTime >= condition.min && currentTime <= condition.max)) {
-        clearedStages.add(currentStage);
+    
+    // クリア済みのステージの場合は即座に次へ進む
+    if (clearedStages.has(currentStage)) {
         currentStage++;
         updateStageContent();
-    } else {
-        shakeNextButton();
+        return;
     }
+    
+    const currentBeat = Math.floor(currentBeatProgress) + 1;
+    selectedBeats.add(currentBeat);  // 現在の拍を選択状態に追加
 });
 
-// リサイズイベント
 window.addEventListener('resize', () => {
-    updateProblemElements();
+    createRhythmDots();
 });
 
 //====================================================
-// メインループと初期化
+// 初期化
 //====================================================
-function update() {
-    if (isPlaying) {
-        currentTime = audio.currentTime;
-        updateProgress();
-        updateProblemElements();
-    }
-    requestAnimationFrame(update);
-}
-
 function initialize() {
     updateStageContent();
     updateProgress();
     requestAnimationFrame(update);
 }
 
-// 初期化
+// 初期化実行
 initialize();
