@@ -196,35 +196,16 @@ const STAGE_CONFIGS = {
     9: {
         gimmicks: [
             {
-                type: GIMMICK_TYPES.IMAGE_SEQUENCE,
+                type: GIMMICK_TYPES.HIRAGANA,
                 settings: {
                     x: 30,
                     y: 50,
-                    size: 70,
-                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage9/rainbow${i}.png`),
-                    changeInterval: 60 * 4 / 170 / 4
+                    size: 80,
+                    changeInterval: 60 * 4 / 170 / 4,
+                    characters: ['春', '夏', '秋', '冬']
                 }
             },
-            {
-                type: GIMMICK_TYPES.HIRAGANA,
-                settings: {
-                    x: 70,
-                    y: 30,
-                    size: 50,
-                    changeInterval: 60 * 4 / 170 / 4,
-                    characters: ['に', 'じ']
-                }
-            },
-            {
-                type: GIMMICK_TYPES.HIRAGANA,
-                settings: {
-                    x: 70,
-                    y: 70,
-                    size: 50,
-                    changeInterval: 60 * 4 / 170 / 4,
-                    characters: ['い', 'ろ']
-                }
-            }
+
         ]
     },
     11: {
@@ -743,7 +724,7 @@ prevButton.addEventListener('click', () => {
 });
 
 nextButton.addEventListener('click', () => {
-    if (currentStage === 9) return;
+    if (currentStage === 24) return;
 
     if (clearedStages.has(currentStage)) {
         currentStage++;
