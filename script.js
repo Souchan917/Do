@@ -251,7 +251,7 @@ let currentBeatProgress = 0;
 let selectedBeats = new Set();
 let lastBeat = -1;
 let isLoopComplete = false;
-const audio = new Audio('assets/audio/Shimokita.mp3');
+const audio = new Audio('assets/audio/GOODFORTUNE Extended.mp3');
 audio.volume = 0.3;
 
 //====================================================
