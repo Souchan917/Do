@@ -4,10 +4,10 @@
 // プレイヤー状態の管理
 let isPlaying = false;
 let currentTime = 0;
-const totalDuration = 132; // 5:12 in seconds
+const totalDuration = 254; // 5:12 in seconds
 let currentStage = 0;
 const audio = new Audio('assets/audio/GOODFORTUNE Extended.mp3');
-audio.volume = 0.05; // デフォルトの音量を30%に設定
+audio.volume = 0.3; // デフォルトの音量を30%に設定
 let clearedStages = new Set();
 
 // DOM Elements
@@ -165,7 +165,7 @@ const HIRAGANA_SETTINGS = {
     id: 'hiragana-display'
 };
 
-let characterChangeInterval = 60*4/180/4;
+let characterChangeInterval = 60*4/170/4;
 let lastCharacterChangeTime = 0;
 //====================================================
 // ステージ4（セグメント）のギミック
@@ -179,7 +179,7 @@ const SEGMENT_SETTINGS = {
     id: 'segment-display'
 };
 
-const SEGMENT_CHANGE_INTERVAL = 60*4/180/4; // 0.5秒ごとに切り替え
+const SEGMENT_CHANGE_INTERVAL = 60*4/170/4; // 0.5秒ごとに切り替え
 //====================================================
 // システム制御（System Control）
 //====================================================
