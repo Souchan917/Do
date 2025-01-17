@@ -37,7 +37,8 @@ const GIMMICK_TYPES = {
     TIMER: 'timer',
     HIRAGANA: 'hiragana',
     IMAGE_SEQUENCE: 'image_sequence',
-    SEGMENT: 'segment'
+    SEGMENT: 'segment',
+    DYNAMIC_TEXT: 'dynamic_text'  // 追加
 };
 
 const STAGE_CONFIGS = {
@@ -66,23 +67,18 @@ const STAGE_CONFIGS = {
     3: {
         gimmicks: [
             {
-                type: GIMMICK_TYPES.IMAGE_SEQUENCE,
+                type: GIMMICK_TYPES.DYNAMIC_TEXT_GROUP,  // 新しいタイプを作成
                 settings: {
-                    x: 20,
-                    y: 50,
-                    size: 80,
-                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage3/moon${i}.png`),
-                    changeInterval: 60 * 4 / 170 / 4
-                }
-            },
-            {
-                type: GIMMICK_TYPES.HIRAGANA,
-                settings: {
-                    x: 80,
-                    y: 50,
-                    size: 60,
-                    changeInterval: 60 * 4 / 170 / 4,
-                    characters: ['つ', 'き']
+                    x: 50,  // 中央に配置
+                    y: 55,
+                    size: 100,
+                    spacing: 15,  // 文字間のスペース
+                    characters: [
+                        { dotIndex: 0, defaultChar: 'ホ', selectedChar: 'ブ' },
+                        { dotIndex: 1, defaultChar: 'ワ', selectedChar: 'ラ' },
+                        { dotIndex: 2, defaultChar: 'イ', selectedChar: 'ッ' },
+                        { dotIndex: 3, defaultChar: 'ト', selectedChar: 'ク' }
+                    ]
                 }
             }
         ]
@@ -195,19 +191,11 @@ const STAGE_CONFIGS = {
             {
                 type: GIMMICK_TYPES.IMAGE_SEQUENCE,
                 settings: {
-                    x: 50,
-                    y: 40,
+                    x: 20,
+                    y: 50,
                     size: 80,
-                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage8/rain${i}.png`),
+                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage8/moon${i}.png`),
                     changeInterval: 60 * 4 / 170 / 4
-                }
-            },
-            {
-                type: GIMMICK_TYPES.TIMER,
-                settings: {
-                    x: 50,
-                    y: 80,
-                    size: 40
                 }
             }
         ]
@@ -250,9 +238,9 @@ const STAGE_CONFIGS = {
 
 const STAGE_NAMES = [
     "チュートリアル",
-    "Do", "イコールの下が答えだ！", "月見ステージ",
+    "Do", "イコールの下が答えだ！", "がんばれ！",
     "数字ステージ", "花火ステージ", "季節ステージ",
-    "星空ステージ", "雨ステージ", "虹ステージ",
+    "星空ステージ", "キイロ", "虹ステージ",
     "風船ステージ", "雪ステージ", "海ステージ",
     "山ステージ", "森ステージ", "太陽ステージ",
     "雲ステージ", "砂漠ステージ", "洞窟ステージ",
@@ -264,12 +252,12 @@ const PUZZLE_IMAGES = {
     0: null,
     1: "assets/images/puzzles/puzzle1.png",
     2: "assets/images/puzzles/puzzle2.png",
-    3: "assets/images/puzzles/stage3/puzzlemoon.png",
+    3: "assets/images/puzzles/puzzle999.png",
     4: "assets/images/puzzles/puzzle4.png",
     5: "assets/images/puzzles/puzzle5.png",
     6: "assets/images/puzzles/puzzle6.png",
     7: "assets/images/puzzles/puzzle7.png",
-    8: "assets/images/puzzles/puzzle8.png",
+    8: "assets/images/puzzles/stage8/puzzlemoon.png",
     9: "assets/images/puzzles/puzzle9.png",
     10: "assets/images/puzzles/puzzle10.png",
     11: "assets/images/puzzles/puzzle11.png",
@@ -291,12 +279,12 @@ const STAGE_ANSWERS = {
     0: "チュートリアルの答え",
     1: "",
     2: "テイル",
-    3: "つきみ",
+    3: "ブライト",
     4: "セグメント",
     5: "はなび",
     6: "きせつ",
     7: "ほしぞら",
-    8: "あめふり",
+    8: "つきみ",
     9: "にじいろ",
     10: "ふうせん",
     11: "ゆきげしき",
@@ -318,12 +306,12 @@ const stageSettings = {
     0: { dots: 4 },
     1: { dots: 4 },
     2: { dots: 8 },
-    3: { dots: 8 },
+    3: { dots: 4 },
     4: { dots: 4 },
     5: { dots: 8 },
     6: { dots: 16 },
     7: { dots: 8 },
-    8: { dots: 4 },
+    8: { dots: 8 },
     9: { dots: 8 },
     10: { dots: 16 },
     11: { dots: 8 },
@@ -344,12 +332,12 @@ const correctPatterns = {
     0: [1, 2, 3, 4],
     1: [1, 2, 4],
     2: [2, 6, 8],
-    3: [2],
-    4: [1, 2, 3, 4],
+    3: [1, 2],
+    4: [1, 2],
     5: [1, 3, 4, 7],
     6: [4, 8, 12, 16],
     7: [2, 4, 6, 8],
-    8: [1, 2, 3, 4],
+    8: [1],
     9: [2, 4, 6, 8],
     10: [4, 8, 12, 16],
     11: [1, 3, 5, 7],
@@ -463,6 +451,30 @@ class GimmickManager {
                 case GIMMICK_TYPES.SEGMENT:
                     // セグメント表示のコードは同じ
                     break;
+
+                case GIMMICK_TYPES.DYNAMIC_TEXT_GROUP:
+                    const container = element;
+                    container.style.display = 'flex';
+                    container.style.flexDirection = 'row';  // 横方向に配置することを明示
+                    container.style.justifyContent = 'center';
+                    container.style.alignItems = 'center';
+                    container.style.width = '100%';
+                    container.style.gap = `${gimmickConfig.settings.spacing}px`;
+                
+                    // 文字要素を作成
+                    gimmickConfig.settings.characters.forEach((char, index) => {
+                        let charElement = container.children[index];
+                        if (!charElement) {
+                            charElement = document.createElement('div');
+                            charElement.className = 'dynamic-text-char';
+                            container.appendChild(charElement);
+                        }
+                
+                        const isSelected = selectedBeats.has(char.dotIndex + 1);
+                        charElement.textContent = isSelected ? char.selectedChar : char.defaultChar;
+                        charElement.style.fontSize = `${size * 0.6}px`;
+                    });
+                    break;
             }
         });
     }
@@ -513,12 +525,21 @@ function createRhythmDots() {
     for (let i = 0; i < dotCount; i++) {
         const dot = document.createElement('div');
         dot.className = 'rhythm-dot';
+        
+        // クリア済みステージの場合、正解のドットを selected 状態で表示
+        if (clearedStages.has(currentStage)) {
+            const beatNumber = i + 1;
+            if (correctPatterns[currentStage].includes(beatNumber)) {
+                dot.classList.add('selected');
+            }
+        }
+        
         dotsContainer.appendChild(dot);
     }
 }
 
 function updateRhythmDots() {
-    if (!isPlaying) return;
+    if (!isPlaying && !clearedStages.has(currentStage)) return;
 
     const dotsContainer = document.getElementById('rhythmDots');
     if (!dotsContainer) return;
@@ -543,9 +564,16 @@ function updateRhythmDots() {
         const beatNumber = index + 1;
         const isCurrentBeat = beatNumber === currentBeat;
         const isSelected = selectedBeats.has(beatNumber);
+        const isCorrectBeat = clearedStages.has(currentStage) && 
+            correctPatterns[currentStage].includes(beatNumber);
 
-        dot.classList.toggle('active', isCurrentBeat);
-        dot.classList.toggle('selected', isSelected);
+        // クリア済みステージの場合、正解のドットを常に selected 状態に
+        if (isCorrectBeat) {
+            dot.classList.add('selected');
+        } else {
+            dot.classList.toggle('active', isCurrentBeat);
+            dot.classList.toggle('selected', isSelected);
+        }
     });
 }
 

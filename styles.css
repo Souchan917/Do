@@ -88,14 +88,13 @@ body.stage-23 { background-color: #5D4037; }
 
 .problem-element {
     position: absolute;
-    transform-origin: left top;
-    white-space: nowrap;
+
     z-index: 2;
-    text-shadow: 
-        -1px -1px 0 #fff,
-        1px -1px 0 #fff,
-        -1px 1px 0 #fff,
-        1px 1px 0 #fff;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .title-area {
@@ -281,4 +280,19 @@ body.stage-23 { background-color: #5D4037; }
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+}
+
+.problem-element.dynamic-text-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+.dynamic-text-char {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    text-align: center;
+    line-height: 1;
+    display: inline-block;
 }
