@@ -38,7 +38,8 @@ const GIMMICK_TYPES = {
     HIRAGANA: 'hiragana',
     IMAGE_SEQUENCE: 'image_sequence',
     SEGMENT: 'segment',
-    DYNAMIC_TEXT: 'dynamic_text'  // 追加
+    DYNAMIC_TEXT: 'dynamic_text',
+    WALL_IMAGE: 'wall_image'  // 追加
 };
 
 const STAGE_CONFIGS = {
@@ -225,7 +226,34 @@ const STAGE_CONFIGS = {
                 }
             }
         ]
-    }
+    },
+    11: {
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.WALL_IMAGE,
+                settings: {
+                    x: 50,
+                    y: 50,
+                    size: 100,  // 100%のサイズで表示
+                    images: Array.from({ length: 16 }, (_, i) => `assets/images/puzzles/wall/wall${i}.png`)
+                }
+            }
+        ]
+    },
+    12: {
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.WALL_IMAGE,
+                settings: {
+                    x: 50,
+                    y: 50,
+                    size: 100,  // 100%のサイズで表示
+                    images: Array.from({ length: 16 }, (_, i) => `assets/images/puzzles/wall/wall${i}.png`)
+                }
+            }
+        ]
+    },
+    
 };
 
 const STAGE_NAMES = [
@@ -233,7 +261,7 @@ const STAGE_NAMES = [
     "Do", "イコールの下が答えだ！", "がんばれ！",
     "数字ステージ", "花火ステージ", "季節ステージ",
     "星空ステージ", "キイロ", "虹ステージ",
-    "風船ステージ", "雪ステージ", "海ステージ",
+    "風船ステージ", "西？", "十二？",
     "山ステージ", "森ステージ", "太陽ステージ",
     "雲ステージ", "砂漠ステージ", "洞窟ステージ",
     "夜空ステージ", "オーロラステージ", "氷河ステージ",
@@ -279,8 +307,8 @@ const STAGE_ANSWERS = {
     8: "つきみ",
     9: "にじいろ",
     10: "ふうせん",
-    11: "ゆきげしき",
-    12: "うみべ",
+    11: "インク",
+    12: "九",
     13: "やまなみ",
     14: "もりのなか",
     15: "たいよう",
@@ -306,8 +334,8 @@ const stageSettings = {
     8: { dots: 8 },
     9: { dots: 8 },
     10: { dots: 16 },
-    11: { dots: 8 },
-    12: { dots: 4 },
+    11: { dots: 16 },
+    12: { dots: 16 },
     13: { dots: 8 },
     14: { dots: 16 },
     15: { dots: 8 },
@@ -332,8 +360,8 @@ const correctPatterns = {
     8: [1],
     9: [2, 4, 6, 8],
     10: [4, 8, 12, 16],
-    11: [1, 3, 5, 7],
-    12: [1, 2, 3, 4],
+    11: [1, 5],
+    12: [1, 2, 3, 4, 5, 9],
     13: [2, 4, 6, 8],
     14: [4, 8, 12, 16],
     15: [1, 3, 5, 7],
@@ -366,6 +394,7 @@ audio.volume = 0.3;
 class GimmickManager {
     constructor() {
         this.elements = new Map();
+        this.activeWallImages = new Map();
     }
 
     createGimmickElement(stageId, gimmickIndex) {
@@ -392,24 +421,33 @@ class GimmickManager {
     updateGimmick(stageId) {
         const config = STAGE_CONFIGS[stageId];
         if (!config) return;
-
+    
         config.gimmicks.forEach((gimmickConfig, index) => {
             let element = this.elements.get(`${stageId}-${index}`);
             if (!element) {
                 element = this.createGimmickElement(stageId, index);
             }
-
+    
             const containerSize = Math.min(problemArea.clientWidth, problemArea.clientHeight);
             const scaleFactor = containerSize / 400;
             const size = gimmickConfig.settings.size * scaleFactor;
-
-            // スタイル設定
-            element.style.width = `${size}px`;
-            element.style.height = `${size}px`;
-            element.style.left = `${gimmickConfig.settings.x}%`;
-            element.style.top = `${gimmickConfig.settings.y}%`;
-            element.style.transform = 'translate(-50%, -50%)';
-
+    
+            if (gimmickConfig.type !== GIMMICK_TYPES.WALL_IMAGE) {
+                // 通常のギミック用のスタイル設定
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+                element.style.left = `${gimmickConfig.settings.x}%`;
+                element.style.top = `${gimmickConfig.settings.y}%`;
+                element.style.transform = 'translate(-50%, -50%)';
+            } else {
+                // WALL_IMAGE用のスタイル設定
+                element.style.width = '100%';
+                element.style.height = '100%';
+                element.style.left = '0';
+                element.style.top = '0';
+                element.style.transform = 'none';
+            }
+    
             if (gimmickConfig.type === GIMMICK_TYPES.TIMER || gimmickConfig.type === GIMMICK_TYPES.HIRAGANA) {
                 element.style.fontSize = `${size * 0.5}px`;
                 element.style.lineHeight = `${size}px`;
@@ -418,17 +456,17 @@ class GimmickManager {
                 element.style.justifyContent = 'center';
                 element.style.alignItems = 'center';
             }
-
+    
             switch (gimmickConfig.type) {
                 case GIMMICK_TYPES.TIMER:
                     element.textContent = formatTime(currentTime);
                     break;
-
+    
                 case GIMMICK_TYPES.HIRAGANA:
                     const charIndex = Math.floor(currentTime / gimmickConfig.settings.changeInterval) % gimmickConfig.settings.characters.length;
                     element.textContent = gimmickConfig.settings.characters[charIndex];
                     break;
-
+    
                 case GIMMICK_TYPES.IMAGE_SEQUENCE:
                     const img = element.querySelector('img');
                     if (img) {
@@ -439,21 +477,48 @@ class GimmickManager {
                         }
                     }
                     break;
-
+    
                 case GIMMICK_TYPES.SEGMENT:
                     // セグメント表示のコードは同じ
                     break;
-
+    
+                case GIMMICK_TYPES.WALL_IMAGE:
+                    // 新しくドットが選択された場合、対応する画像を表示
+                    selectedBeats.forEach(beatNumber => {
+                        if (!this.activeWallImages.has(beatNumber)) {
+                            const imageElement = document.createElement('img');
+                            imageElement.src = gimmickConfig.settings.images[beatNumber - 1];
+                            imageElement.style.position = 'absolute';
+                            imageElement.style.top = '0';
+                            imageElement.style.left = '0';
+                            imageElement.style.width = '100%';
+                            imageElement.style.height = '100%';
+                            imageElement.style.objectFit = 'cover';
+                            imageElement.style.zIndex = '1';
+                            element.appendChild(imageElement);
+                            this.activeWallImages.set(beatNumber, imageElement);
+                        }
+                    });
+    
+                    // ループが完了したら画像をリセット
+                    if (isLoopComplete) {
+                        this.activeWallImages.forEach((img) => {
+                            img.remove();
+                        });
+                        this.activeWallImages.clear();
+                    }
+                    break;
+    
                 case GIMMICK_TYPES.DYNAMIC_TEXT_GROUP:
+                    const textSize = gimmickConfig.settings.size * scaleFactor;
                     const container = element;
                     container.style.display = 'flex';
-                    container.style.flexDirection = 'row';  // 横方向に配置することを明示
+                    container.style.flexDirection = 'row';
                     container.style.justifyContent = 'center';
                     container.style.alignItems = 'center';
                     container.style.width = '100%';
                     container.style.gap = `${gimmickConfig.settings.spacing}px`;
                 
-                    // 文字要素を作成
                     gimmickConfig.settings.characters.forEach((char, index) => {
                         let charElement = container.children[index];
                         if (!charElement) {
@@ -464,7 +529,7 @@ class GimmickManager {
                 
                         const isSelected = selectedBeats.has(char.dotIndex + 1);
                         charElement.textContent = isSelected ? char.selectedChar : char.defaultChar;
-                        charElement.style.fontSize = `${size * 0.6}px`;
+                        charElement.style.fontSize = `${textSize * 0.6}px`;
                     });
                     break;
             }
