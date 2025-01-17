@@ -64,7 +64,7 @@ const STAGE_CONFIGS = {
             x: 50,
             y: 50,
             size: 60,
-            images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage2/mikan${i}.png`),
+            images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage2/moon${i}.png`),
             changeInterval: 60 * 4 / 170 / 4
         }
     },
