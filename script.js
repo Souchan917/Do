@@ -219,16 +219,7 @@ const STAGE_CONFIGS = {
     },
     7: {
         gimmicks: [
-            {
-                type: GIMMICK_TYPES.IMAGE_SEQUENCE,
-                settings: {
-                    x: 50,
-                    y: 30,
-                    size: 70,
-                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage7/star${i}.png`),
-                    changeInterval: 60 * 4 / 170 / 4
-                }
-            },
+
             {
                 type: GIMMICK_TYPES.HIRAGANA,
                 settings: {
@@ -1316,14 +1307,127 @@ updateStageContent = function() {
 //====================================================
 // 初期化
 //====================================================
-function initialize() {
+// アセットのプリロード機能を追加
+class AssetLoader {
+    constructor() {
+        this.totalAssets = 0;
+        this.loadedAssets = 0;
+        this.loadingText = document.createElement('div');
+        this.setupLoadingUI();
+    }
+
+    setupLoadingUI() {
+        this.loadingText.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            text-align: center;
+            z-index: 10000;
+        `;
+        document.body.appendChild(this.loadingText);
+    }
+
+    updateLoadingProgress() {
+        const percentage = Math.floor((this.loadedAssets / this.totalAssets) * 100);
+        this.loadingText.textContent = `Loading... ${percentage}%`;
+    }
+
+    async loadAll() {
+        // 画像のリストを作成
+        const imageList = [
+            ...Object.values(PUZZLE_IMAGES),
+            'assets/images/controls/play.png',
+            'assets/images/controls/pause.png',
+            'assets/images/controls/prev.png',
+            'assets/images/controls/next.png'
+        ];
+
+        // Stage 7の星の画像
+        for (let i = 0; i < 8; i++) {
+            imageList.push(`assets/images/puzzles/stage8/moon${i}.png`);
+        }
+
+        // Stage 8の月の画像
+        for (let i = 0; i < 8; i++) {
+            imageList.push(`assets/images/puzzles/stage8/moon${i}.png`);
+        }
+
+        // Wall画像
+        for (let i = 0; i < 16; i++) {
+            imageList.push(`assets/images/puzzles/wall/wall${i}.png`);
+        }
+
+        this.totalAssets = imageList.length + 1; // +1 for audio
+        this.loadedAssets = 0;
+
+        // 画像のプリロード
+        const imagePromises = imageList.map(src => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                    this.loadedAssets++;
+                    this.updateLoadingProgress();
+                    resolve();
+                };
+                img.onerror = reject;
+                img.src = src;
+            });
+        });
+
+        // オーディオのプリロード
+        const audioPromise = new Promise((resolve, reject) => {
+            const tempAudio = new Audio('assets/audio/MUSIC.mp3');
+            tempAudio.addEventListener('canplaythrough', () => {
+                this.loadedAssets++;
+                this.updateLoadingProgress();
+                resolve();
+            }, { once: true });
+            tempAudio.addEventListener('error', reject);
+            tempAudio.load();
+        });
+
+        try {
+            await Promise.all([...imagePromises, audioPromise]);
+            this.loadingText.remove();
+            return true;
+        } catch (error) {
+            console.error('Asset loading failed:', error);
+            this.loadingText.textContent = 'Loading failed. Please refresh the page.';
+            return false;
+        }
+    }
+}
+
+// 初期化関数を修正
+async function initialize() {
     // モーダルの制御
     const modal = document.getElementById('startModal');
     const startButton = document.getElementById('startButton');
+    const container = document.querySelector('.container');
+    
+    // 最初は全て非表示
+    modal.style.visibility = 'hidden';
+    container.style.visibility = 'hidden';
+
+    // アセットのロード
+    const loader = new AssetLoader();
+    const loadSuccess = await loader.loadAll();
+
+    if (!loadSuccess) {
+        return; // ロード失敗時は初期化中止
+    }
+
+    // ロード完了後にモーダルを表示
+    modal.style.visibility = 'visible';
     
     // ゲーム開始を遅延させる
     const startGame = () => {
         modal.style.display = 'none';
+        container.style.visibility = 'visible';
         updateStageContent();
         updateProgress();
         requestAnimationFrame(update);
@@ -1332,14 +1436,6 @@ function initialize() {
 
     // OKボタンのクリックイベント
     startButton.addEventListener('click', startGame);
-
-    // モーダル表示中は他の要素を非表示に
-    document.querySelector('.container').style.visibility = 'hidden';
-    
-    // OKボタンクリック後に表示
-    startButton.addEventListener('click', () => {
-        document.querySelector('.container').style.visibility = 'visible';
-    });
 }
 
 // 初期化実行
