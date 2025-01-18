@@ -428,7 +428,7 @@ const PUZZLE_IMAGES = {
 };
 
 const STAGE_ANSWERS = {
-    0: "チュートリアルの答え",
+    0: "ーーー",
     1: "ーーー",
     2: "テイル",
     3: "ブライト",
