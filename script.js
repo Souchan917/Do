@@ -324,12 +324,12 @@ const STAGE_CONFIGS = {
                     dots: [
                         { x: 50, y: 35, size: 25, beat: 1 },  // 左上
                         { x: 73, y: 35, size: 25, beat: 2 },  // 右上
-                        { x: 40, y: 80, size: 25, beat: 3 },  // 左から2番目
+                        { x: 40, y: 85, size: 25, beat: 3 },  // 左から2番目
                         { x: 39, y: 35, size: 25, beat: 4 },  // 右から2番目
                         { x: 61.5, y: 35, size: 25, beat: 5 },  // 左から3番目
                         { x: 84, y: 35, size: 25, beat: 6 },  // 右から3番目
-                        { x: 50, y: 80, size: 25, beat: 7 },  // 左下
-                        { x: 60, y: 80, size: 25, beat: 8 }   // 右下
+                        { x: 50, y: 85, size: 25, beat: 7 },  // 左下
+                        { x: 60, y: 85, size: 25, beat: 8 }   // 右下
                     ]
                 }
             }
