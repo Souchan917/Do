@@ -371,7 +371,7 @@ const STAGE_CONFIGS = {
             {
                 type: GIMMICK_TYPES.CLICK_COUNTER,
                 settings: {
-                    x: 50,
+                    x: 30,
                     y: 70,
                     size: 80
                 }
