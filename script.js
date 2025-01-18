@@ -451,8 +451,18 @@ const STAGE_ANSWERS = {
     14: "てんかい",
     15: "？？？",
     16: "がんばれ～",
-    17: "クリアおめでとう！"
+    17: 'クリアおめでとう！ <a href="https://twitter.com/intent/tweet?text=%E3%80%8CDo%E3%80%8D%E3%82%92%E8%A7%A3%E3%81%8D%E6%98%8E%E3%81%8B%E3%81%97%E3%81%9F%EF%BC%81%20%23Do%E8%AC%8E%20%23Player%E8%AC%8E" target="_blank" style="color: #1DA1F2; text-decoration: none;">Xに投稿する</a>'
 };
+
+function updateAnswer() {
+    const answerElement = document.querySelector('.answer-area p');
+    if (currentStage === 17) {
+        answerElement.innerHTML = STAGE_ANSWERS[currentStage];
+    } else {
+        answerElement.textContent = STAGE_ANSWERS[currentStage];
+    }
+}
+
 
 const stageSettings = {
     0: { dots: 4 },

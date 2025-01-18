@@ -366,3 +366,16 @@ body.stage-23 { background-color: #5D4037; }
 .modal-button:hover {
     background-color: #45a049;
 }
+
+/* styles.css */
+
+/* クリック可能なリンクのスタイル */
+.answer-area a {
+    color: #1DA1F2; /* Twitterブルー */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.answer-area a:hover {
+    text-decoration: underline;
+}
