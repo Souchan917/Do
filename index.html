@@ -11,7 +11,32 @@
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="startModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-title">注意事項</h2>
+            <div class="modal-text">
+                <p>このゲームには音楽が含まれています。<br>
+                音量にご注意ください。</p>
     
+                <p style="margin-top: 15px;">【ゲーム概要】</p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>全16ステージのパズルゲーム</li>
+                    <li>各ステージは独立した問題です</li>
+                    <li>音声の再生環境が必要です</li>
+                </ul>
+    
+                <div style="font-size: 14px; background: #f8f8f8; padding: 10px; border-radius: 5px;">
+                    <p>使用楽曲：</p>
+                    <p>GOODFORTUNE (Extended) - EBIMAYO<br>
+                    Album: GOODCOLLECTION V4 (AB-Sounds)</p>
+                    <p style="margin-top: 8px;">© Creative Commons Attribution-NonCommercial</p>
+                </div>
+    
+                <p style="color: #666; font-size: 14px; margin-top: 15px;">※β版につき、バグ等ご容赦ください</p>
+            </div>
+            <button id="startButton" class="modal-button">OK</button>
+        </div>
+    </div>
     <div class="container">
         
         <div class="problem-area" id="problemArea">

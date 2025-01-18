@@ -100,14 +100,15 @@ const STAGE_CONFIGS = {
                     y: 50,      // 全体の中心Y座標
                     size: 400,  // 全体のサイズ
                     dots: [
-                        { x: 20, y: 20, size: 30 },  // 左上
-                        { x: 80, y: 20, size: 30 },  // 右上
-                        { x: 20, y: 40, size: 30 },  // 左から2番目
-                        { x: 80, y: 40, size: 30 },  // 右から2番目
-                        { x: 20, y: 60, size: 30 },  // 左から3番目
-                        { x: 80, y: 60, size: 30 },  // 右から3番目
-                        { x: 20, y: 80, size: 30 },  // 左下
-                        { x: 80, y: 80, size: 30 }   // 右下
+                        { x: 20, y: 20, size: 30, beat: 1 },  // 左上
+                        { x: 80, y: 20, size: 30, beat: 2 },  // 右上
+                        { x: 20, y: 40, size: 30, beat: 3 },  // 左から2番目
+                        { x: 80, y: 40, size: 30, beat: 4 },  // 右から2番目
+                        { x: 20, y: 60, size: 30, beat: 5 },  // 左から3番目
+                        { x: 80, y: 60, size: 30, beat: 6 },  // 右から3番目
+                        { x: 20, y: 80, size: 30, beat: 7 },  // 左下
+                        { x: 80, y: 80, size: 30, beat: 8 }   // 右下
+                        
                     ]
                 }
             }
@@ -327,14 +328,14 @@ const STAGE_CONFIGS = {
                     y: 50,      // 全体の中心Y座標
                     size: 400,  // 全体のサイズ
                     dots: [
-                        { x: 50, y: 35, size: 20 },  // 左上
-                        { x: 73, y: 35, size: 20 },  // 右上
-                        { x: 45, y: 80, size: 20 },  // 左から2番目
-                        { x: 27, y: 35, size: 20 },  // 右から2番目
-                        { x: 61.5, y: 35, size: 20 },  // 左から3番目
-                        { x: 84, y: 35, size: 20 },  // 右から3番目
-                        { x: 50, y: 80, size: 20 },  // 左下
-                        { x: 55, y: 80, size: 20 }   // 右下
+                        { x: 50, y: 35, size: 25, beat: 1 },  // 左上
+                        { x: 73, y: 35, size: 25, beat: 2 },  // 右上
+                        { x: 40, y: 80, size: 25, beat: 3 },  // 左から2番目
+                        { x: 27, y: 35, size: 25, beat: 4 },  // 右から2番目
+                        { x: 61.5, y: 35, size: 25, beat: 5 },  // 左から3番目
+                        { x: 84, y: 35, size: 25, beat: 6 },  // 右から3番目
+                        { x: 50, y: 80, size: 25, beat: 7 },  // 左下
+                        { x: 60, y: 80, size: 25, beat: 8 }   // 右下
                     ]
                 }
             }
@@ -398,7 +399,7 @@ const STAGE_CONFIGS = {
 const STAGE_NAMES = [
     "チュートリアル",
     "Do", "イコールの下が答えだ！", "かがやき",
-    "選択", "花火ステージ", "数式",
+    "選択", "0or1", "数式",
     "星空ステージ", "夜空", "ーーー",
     "風船ステージ", "問題を成立させよう！", "西？",
     "九？", "一週間", "楽器の名前をこたえよう",
@@ -1316,10 +1317,29 @@ updateStageContent = function() {
 // 初期化
 //====================================================
 function initialize() {
-    updateStageContent();
-    updateProgress();
-    requestAnimationFrame(update);
-    debugTools.initialize(); // 追加
+    // モーダルの制御
+    const modal = document.getElementById('startModal');
+    const startButton = document.getElementById('startButton');
+    
+    // ゲーム開始を遅延させる
+    const startGame = () => {
+        modal.style.display = 'none';
+        updateStageContent();
+        updateProgress();
+        requestAnimationFrame(update);
+        debugTools.initialize();
+    };
+
+    // OKボタンのクリックイベント
+    startButton.addEventListener('click', startGame);
+
+    // モーダル表示中は他の要素を非表示に
+    document.querySelector('.container').style.visibility = 'hidden';
+    
+    // OKボタンクリック後に表示
+    startButton.addEventListener('click', () => {
+        document.querySelector('.container').style.visibility = 'visible';
+    });
 }
 
 // 初期化実行
