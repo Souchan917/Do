@@ -399,3 +399,36 @@ body.stage-23 { background-color: #5D4037; }
     margin-top: 15px;
     z-index: 10;
 }
+
+/* styles.cssに追加 */
+.share-container {
+    display: none; /* デフォルトでは非表示 */
+    text-align: center;
+    margin: 20px 0;
+    opacity: 0;
+    pointer-events: none; /* クリック不可に */
+    transition: opacity 0.3s ease;
+}
+
+/* ステージ17の時だけ表示 */
+body.stage-17 .share-container {
+    display: block;
+    opacity: 1;
+    pointer-events: auto; /* クリック可能に */
+}
+
+.share-button {
+    background-color: #1DA1F2;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+.share-button:hover {
+    background-color: #1a91da;
+}
