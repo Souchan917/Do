@@ -1056,7 +1056,7 @@ function checkRhythmPattern() {
         const allBeatsCorrect = pattern.every(beat => selectedBeats.has(beat));
         if (allBeatsCorrect) {
             // クリック回数が100回以下かチェック
-            if (clickCounts.getTotal() <= 90) {
+            if (clickCounts.getTotal() <= 100) {
                 clearedStages.add(currentStage);
                 currentStage++;
                 updateStageContent();
