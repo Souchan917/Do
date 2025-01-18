@@ -14,15 +14,7 @@ import {
     update 
 } from "firebase/database";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyCkP9hzJdYValeI83fR5L8zOe4nOHJya_8",
-    authDomain: "do-player.firebaseapp.com",
-    projectId: "do-player",
-    storageBucket: "do-player.firebasestorage.app",
-    messagingSenderId: "2808121700",
-    appId: "1:2808121700:web:77cea0a8db7949e9621271",
-    measurementId: "G-1HZDYBJCBH"
-};
+
 
 // Firebaseの初期化
 const app = initializeApp(firebaseConfig);
