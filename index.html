@@ -37,6 +37,17 @@
             <button id="startButton" class="modal-button">OK</button>
         </div>
     </div>
+    <div id="hintButton" class="hint-button hidden">
+        <img src="assets/images/controls/hint.png" alt="Hint">
+    </div>
+    <div id="hintModal" class="hint-modal hidden">
+        <div class="hint-content">
+            <h3>ヒント</h3>
+            <p id="hintText"></p>
+            <button class="hint-close">閉じる</button>
+        </div>
+    </div>
+
     <div class="container">
         
         <div class="problem-area" id="problemArea">
@@ -69,6 +80,12 @@
         <div id="shareContainer" class="share-container">
             <button onclick="shareToTwitter()" class="share-button">
                 Xで共有
+            </button>
+        </div>
+        
+        <div id="resetContainer" class="reset-container">
+            <button onclick="location.reload()" class="reset-button">
+                リロードして初めからプレイする
             </button>
         </div>
 
@@ -143,8 +160,8 @@
             数字キー: 0-9 = Stage 0-9<br>
             Shift + 数字キー: 1-9 = Stage 11-19<br>
             Ctrl + 数字キー: 1-9 = Stage 21-29
-        </div> -->
-    </div>
+        </div>
+    </div> -->
     <script src="script.js"></script>
 </body>
 </html>

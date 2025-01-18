@@ -433,7 +433,29 @@ const PUZZLE_IMAGES = {
     17: "assets/images/puzzles/puzzle17.png"
 };
 
+// ヒントシステム
+const STAGE_HINTS = {
+    0: "音楽のリズムに合わせて点が動きます。特に何もしなくても大丈夫です。",
+    1: "黒黒白黒の順番で丸が表示されています。あなたができることはボタンを押すことのみです。試しに何度か次へボタンを押してみましょう",
+    2: "停止ボタンをイコールだとすれば、答えは「テイル」です。「ステージタイトル」という文字の中に「テイル」が存在しています",
+    3: "全てのボタンを押すと「ブラック」となります。「ホワイト」「ブラック」この文字から「ブライト」を作りましょう",
+    4: "8つの点が順番に光ります。イラストを2文字に変換し「せんたく」になるようにどちらか片方ずつ選びましょう",
+    5: "10個の要素がありますが、これは数字の「ZERO」から「NINE」を表しています。ボタンを押すと#が「O」か「I」になります。",
+    6: "左側について「/」と縦書きの「一日」を合わせるととある漢数字になります。",
+    7: "すべて光らせると「なぼとういざくん」となります。",
+    8: "月が満ち欠けしていきます。「つきみ」にするには、真ん中が「み？づき」になります。",
+    9: "上部は「一富士二鷹三茄子」を表しています。下部の食べ物にまつわる「慣用句」思い出してみましょう。",
+    10: "「黒黒・黒・・黒・」で点滅しています",
+    11: "ボタンを押すと、16分割されたタイルが現れます。上部は「点が10個で酉(とり)」中部は「点が12個で亥(い)」を表しています。1か所消す必要があります。",
+    12: "例示は九九の「にしがはち」「さざんがく」を表しています。3か所消す必要があります。",
+    13: "例示は「点の個数」になるように調節しましょう。7か所消す必要があります。",
+    14: "1拍目は「水」、2拍目は「金」、4拍目は「火」5拍目は「木」を表しています。この8個の要素は非常に大きなものです。",
+    15: "7色のバーがあります。それぞれの色と文字数を考えると、上から2番目は「オレンジ」4番目は「ミドリ」が当てはまります。",
+    16: "クリック回数を100回以内に抑える必要があります。効率的な選び方を考えましょう。"
+};
 
+let loopCount = 0;
+let hintShown = false;
 
 const STAGE_ANSWERS = {
     0: "ーーー",
@@ -1155,7 +1177,11 @@ function checkRhythmPattern() {
                 currentStage++;
                 updateStageContent();
             } else {
-
+                // クリック回数が100を超えた場合、リセットボタンを表示
+                const resetContainer = document.getElementById('resetContainer');
+                if (resetContainer) {
+                    resetContainer.classList.add('show');
+                }
             }
         }
         selectedBeats.clear();
@@ -1520,6 +1546,125 @@ class AssetLoader {
         }
     }
 }
+
+// ステージごとのヒント表示に必要なループ回数を定義
+const STAGE_HINT_LOOPS = {
+    0: 999,  // チュートリアルはヒント非表示
+    1: 10,    // 比較的簡単なステージは早めに表示
+    2: 10,
+    3: 20,
+    4: 10,
+    5: 12,
+    6: 12,
+    7: 12,
+    8: 10,
+    9: 6,
+    10: 10,
+    11: 10,
+    12: 12,
+    13: 12,
+    14: 15,
+    15: 15,
+    16: 999,   // 最終ステージは少し長めに
+    17: 999   // エンディングはヒント非表示
+};
+
+// ヒントシステムの初期化
+function initializeHintSystem() {
+    const hintButton = document.getElementById('hintButton');
+    const hintModal = document.getElementById('hintModal');
+    const hintText = document.getElementById('hintText');
+    const closeButton = document.querySelector('.hint-close');
+
+    // ステージごとのループカウントを保持するオブジェクト
+    const stageLoopCounts = {};
+    
+    // ヒントボタンの表示/非表示を制御
+    function updateHintButtonVisibility() {
+        // ステージ0（チュートリアル）とステージ17（エンディング）では非表示
+        if (currentStage === 0 || currentStage >= 17) {
+            hintButton.classList.add('hidden');
+            return;
+        }
+
+        // 現在のステージのループカウントを取得
+        stageLoopCounts[currentStage] = stageLoopCounts[currentStage] || 0;
+
+        // ループ完了時にカウントを増やす
+        if (isLoopComplete) {
+            stageLoopCounts[currentStage]++;
+        }
+
+        // ステージごとに設定された回数以上でヒントを表示
+        const requiredLoops = STAGE_HINT_LOOPS[currentStage] || 12; // デフォルトは12回
+        if (stageLoopCounts[currentStage] >= requiredLoops && !clearedStages.has(currentStage)) {
+            hintButton.classList.remove('hidden');
+        } else {
+            hintButton.classList.add('hidden');
+        }
+    }
+
+    // ヒントモーダルを表示
+    function showHintModal() {
+        const hint = STAGE_HINTS[currentStage];
+        if (hint) {
+            hintText.textContent = hint;
+            hintModal.classList.add('show');
+        }
+    }
+
+    // ヒントモーダルを非表示
+    function hideHintModal() {
+        hintModal.classList.remove('show');
+    }
+
+    // イベントリスナーの設定
+    hintButton.addEventListener('click', showHintModal);
+    closeButton.addEventListener('click', hideHintModal);
+    hintModal.addEventListener('click', (e) => {
+        if (e.target === hintModal) {
+            hideHintModal();
+        }
+    });
+
+    // ステージ変更時にループカウントをリセット
+    const originalUpdateStageContent = window.updateStageContent;
+    window.updateStageContent = function() {
+        originalUpdateStageContent.apply(this, arguments);
+        // 新しいステージに移動した時はループカウントをリセット
+        if (!stageLoopCounts[currentStage]) {
+            stageLoopCounts[currentStage] = 0;
+        }
+        updateHintButtonVisibility();
+    };
+
+    // リズムパターンチェック後にヒントボタンの表示状態を更新
+    const originalCheckRhythmPattern = window.checkRhythmPattern;
+    window.checkRhythmPattern = function() {
+        originalCheckRhythmPattern.apply(this, arguments);
+        updateHintButtonVisibility();
+    };
+
+    // 音楽ループ完了時にヒントボタンの表示状態を更新
+    const originalUpdateRhythmDots = window.updateRhythmDots;
+    window.updateRhythmDots = function() {
+        originalUpdateRhythmDots.apply(this, arguments);
+        if (isLoopComplete) {
+            updateHintButtonVisibility();
+        }
+    };
+
+    // 初期状態の設定
+    updateHintButtonVisibility();
+}
+
+// 初期化関数に組み込む
+const originalInitialize = initialize;
+initialize = async function() {
+    await originalInitialize.apply(this, arguments);
+    initializeHintSystem();
+};
+
 
 // 初期化関数を修正
 async function initialize() {

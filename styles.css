@@ -469,3 +469,131 @@ body.stage-17 .share-container {
 .share-button:hover {
     background-color: #1a91da;
 }
+
+/* リセットボタンのスタイル */
+.reset-container {
+    text-align: center;
+    margin: 20px 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    display: none;
+}
+
+body.stage-16 .reset-container {
+    display: block;
+}
+
+body.stage-16 .reset-container.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.reset-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+.reset-button:hover {
+    background-color: #c82333;
+}
+
+
+
+
+.reset-button:hover {
+    background-color: #c82333;
+}
+
+/* ヒントボタンのスタイル */
+.hint-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+}
+
+.hint-button.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8);
+}
+
+.hint-button img {
+    width: 24px;
+    height: 24px;
+}
+
+/* ヒントモーダルのスタイル */
+.hint-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.hint-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.hint-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 90%;
+    width: 400px;
+    color: #333;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+.hint-content h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.hint-content p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.hint-close {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
