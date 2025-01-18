@@ -43,7 +43,18 @@ const GIMMICK_TYPES = {
     DOT_COUNTER: 'dot_counter',
     DYNAMIC_TEXT_GROUP: 'dynamic_text_group',
     RHYTHM_DOTS: 'rhythm_dots',
-    NUMBER_TEXT: 'number_text'
+    NUMBER_TEXT: 'number_text',
+    CLICK_COUNTER: 'click_counter'  // 新しく追加
+};
+// クリック回数を追跡する変数を追加
+const clickCounts = {
+    play: 0,
+    prev: 0,
+    next: 0,
+    progress: 0,
+    getTotal() {
+        return this.play + this.prev + this.next + this.progress;
+    }
 };
 
 const STAGE_CONFIGS = {
@@ -132,13 +143,13 @@ const STAGE_CONFIGS = {
                         },
 
                         {
-                            text: "F#U-",
+                            text: "-#U-",
                             x: 50,
                             y: 35,
                             specialChar: { index: 1, default: "O", selected: "I" }
                         },
                         {
-                            text: "F#V-",
+                            text: "-#V-",
                             x: 50,
                             y: 55,
                             specialChar: { index: 1, default: "O", selected: "I" }
@@ -307,18 +318,90 @@ const STAGE_CONFIGS = {
             }
         ]
     },
+    14: {
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.RHYTHM_DOTS,
+                settings: {
+                    x: 50,      // 全体の中心X座標
+                    y: 50,      // 全体の中心Y座標
+                    size: 400,  // 全体のサイズ
+                    dots: [
+                        { x: 50, y: 35, size: 20 },  // 左上
+                        { x: 73, y: 35, size: 20 },  // 右上
+                        { x: 45, y: 80, size: 20 },  // 左から2番目
+                        { x: 27, y: 35, size: 20 },  // 右から2番目
+                        { x: 61.5, y: 35, size: 20 },  // 左から3番目
+                        { x: 84, y: 35, size: 20 },  // 右から3番目
+                        { x: 50, y: 80, size: 20 },  // 左下
+                        { x: 55, y: 80, size: 20 }   // 右下
+                    ]
+                }
+            }
+        ]
+    },
+
+    15: {
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.RHYTHM_DOTS,
+                settings: {
+                    x: 50,      
+                    y: 50,      
+                    size: 400,  
+                    dots: [
+                        // beat: どの拍に属するか
+                        { x: 50, y: 53, size: 30, beat: 1 }, 
+                        { x: 58, y: 12, size: 30, beat: 1 },  // 1拍目のドット
+                        
+                        // 2拍目の3つのドット
+                        { x: 40, y: 12, size: 30, beat: 2 },
+                        { x: 41, y: 26, size: 30, beat: 2 },
+                        { x: 51.5, y: 89, size: 30, beat: 2 },
+                        
+                        { x: 40, y: 53, size: 30, beat: 3 },  // 3拍目のドット
+
+                        { x: 90, y: 40, size: 30, beat: 4 },
+                        { x: 90, y: 50, size: 30, beat: 5 },
+                        { x: 90, y: 60, size: 30, beat: 6 },
+
+                        { x: 60, y: 26, size: 30, beat: 7 },  // 4拍目のドット
+                    ]
+                }
+            }
+        ]
+    },
+    
+    17: {
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.CLICK_COUNTER,
+                settings: {
+                    x: 30,
+                    y: 30,
+                    size: 80
+                }
+            },
+            {
+                type: GIMMICK_TYPES.RECORDS_DISPLAY,
+                settings: {
+                    x: 50,
+                    y: 60,
+                    size: 150
+                }
+            }
+        ]
+    },
     
 };
 
 const STAGE_NAMES = [
     "チュートリアル",
     "Do", "イコールの下が答えだ！", "かがやき",
-    "数字ステージ", "花火ステージ", "数式",
-    "星空ステージ", "キイロ", "虹ステージ",
+    "選択", "花火ステージ", "数式",
+    "星空ステージ", "夜空", "ーーー",
     "風船ステージ", "問題を成立させよう！", "西？",
-    "九？", "森ステージ", "太陽ステージ",
-    "雲ステージ", "砂漠ステージ", "洞窟ステージ",
-    "夜空ステージ", "オーロラステージ", "氷河ステージ",
+    "九？", "一週間", "楽器の名前をこたえよう",
     "最終ステージ", "エンディング"
 ];
 
@@ -340,40 +423,28 @@ const PUZZLE_IMAGES = {
     14: "assets/images/puzzles/puzzle14.png",
     15: "assets/images/puzzles/puzzle15.png",
     16: "assets/images/puzzles/puzzle16.png",
-    17: "assets/images/puzzles/puzzle17.png",
-    18: "assets/images/puzzles/puzzle18.png",
-    19: "assets/images/puzzles/puzzle19.png",
-    20: "assets/images/puzzles/puzzle20.png",
-    21: "assets/images/puzzles/puzzle21.png",
-    22: "assets/images/puzzles/puzzle22.png",
-    23: "assets/images/puzzles/clear.png"
+    17: "assets/images/puzzles/puzzle17.png"
 };
 
 const STAGE_ANSWERS = {
     0: "チュートリアルの答え",
-    1: "",
+    1: "ーーー",
     2: "テイル",
     3: "ブライト",
     4: "せんたく",
-    5: "はなび",
+    5: "ーーー",
     6: "十",
-    7: "ほしぞら",
+    7: "ーーー",
     8: "つきみ",
     9: "にじいろ",
-    10: "ふうせん",
+    10: "ーーー",
     11: "午(うま)",
     12: "インク",
     13: "七",
-    14: "もりのなか",
-    15: "たいよう",
-    16: "くもり",
-    17: "さばく",
-    18: "どうくつ",
-    19: "よぞら",
-    20: "オーロラ",
-    21: "オーロラ",
-    22: "さいご",
-    23: "おめでとう！"
+    14: "てんかい",
+    15: "？？？",
+    16: "がんばれ～",
+    17: "クリアおめでとう！"
 };
 
 const stageSettings = {
@@ -391,16 +462,10 @@ const stageSettings = {
     11: { dots: 16 },
     12: { dots: 16 },
     13: { dots: 16 },
-    14: { dots: 16 },
+    14: { dots: 8 },
     15: { dots: 8 },
-    16: { dots: 4 },
-    17: { dots: 8 },
-    18: { dots: 16 },
-    19: { dots: 8 },
-    20: { dots: 4 },
-    19: { dots: 8 },
-    22: { dots: 8 },
-    23: { dots: 4 }
+    16: { dots: 8 },
+    17: { dots: 8 }
 };
 const correctPatterns = {
     0: [1, 2, 3, 4],
@@ -417,16 +482,10 @@ const correctPatterns = {
     11: [13],
     12: [1, 5, 9],
     13: [1, 2, 3, 4, 5, 9, 13],
-    14: [4, 8, 12, 16],
-    15: [1, 3, 5, 7],
-    16: [1, 2, 3, 4],
-    17: [2, 4, 6, 8],
-    18: [4, 8, 12, 16],
-    19: [1, 3, 5, 7],
-    20: [1, 2, 3, 4],
-    21: [1, 2, 3, 4],
-    22: [2, 4, 6, 8],
-    23: [1, 2, 3, 4]
+    14: [7, 8],
+    15: [1, 6],
+    16: [1, 6],
+    17: [2, 4, 6, 8]
 };
 //====================================================
 // ゲーム状態管理
@@ -706,42 +765,48 @@ _updateNumberTextGimmick(element, config, containerSize) {
             );
         }
     }
-
+    
+    _updateClickCounterGimmick(element, config, size) {
+        const total = clickCounts.getTotal();
+        element.style.fontSize = `${size * 0.3}px`;
+        element.style.fontFamily = "'M PLUS Rounded 1c', sans-serif";
+        element.style.textAlign = 'center';
+        element.style.color = '#333';
+        element.style.whiteSpace = 'nowrap';  // 追加：改行を防ぐ
+        element.textContent = `総クリック回数: ${total}回`;  // brタグを削除し、区切りをコロンに
+    }
     _updateRhythmDotsGimmick(element, config, containerSize) {
         const dots = element.querySelectorAll('.rhythm-dot-in-puzzle');
-        const scaleFactor = containerSize / 400; // 400pxを基準とした倍率
-
+        const scaleFactor = containerSize / 400;
+        const currentBeat = Math.floor(currentBeatProgress) + 1;
+    
         const container = element.querySelector('div');
         container.style.position = 'absolute';
         container.style.width = '100%';
         container.style.height = '100%';
         container.style.top = '0';
         container.style.left = '0';
-
+    
         dots.forEach((dot, index) => {
             const dotConfig = config.settings.dots[index];
-            const beatNumber = index + 1;
-
-            // ドットのスタイル設定
-            dot.style.position = 'absolute';
-            
-            // 位置とサイズの設定
+            const beatNumber = dotConfig.beat;  // 配列のインデックスではなく、beatプロパティを使用
+    
             const scaledSize = (dotConfig.size || 20) * scaleFactor;
             dot.style.width = `${scaledSize}px`;
             dot.style.height = `${scaledSize}px`;
             dot.style.left = `${dotConfig.x}%`;
             dot.style.top = `${dotConfig.y}%`;
             dot.style.transform = 'translate(-50%, -50%)';
-
+    
             // 見た目の設定
             dot.style.backgroundColor = selectedBeats.has(beatNumber) ? '#000000' : '#FFFFFF';
             dot.style.borderRadius = '50%';
             dot.style.opacity = '0.8';
             dot.style.transition = 'all 0.1s ease';
             dot.style.border = '2px solid #333';
-
+    
             // 現在のビートのドットをハイライト
-            if (beatNumber === Math.floor(currentBeatProgress) + 1) {
+            if (beatNumber === currentBeat) {
                 dot.style.transform = 'translate(-50%, -50%) scale(1.2)';
                 dot.style.opacity = '1';
             } else {
@@ -821,6 +886,10 @@ _updateNumberTextGimmick(element, config, containerSize) {
 
                 case GIMMICK_TYPES.NUMBER_TEXT:
                     this._updateNumberTextGimmick(element, gimmickConfig, containerSize);
+                    break;
+
+                case GIMMICK_TYPES.CLICK_COUNTER:
+                    this._updateClickCounterGimmick(element, gimmickConfig, size);
                     break;
             }
         });
@@ -960,6 +1029,28 @@ function checkRhythmPattern() {
         return;
     }
 
+    if (currentStage === 16) {
+        const pattern = correctPatterns[currentStage];
+        if (!pattern || selectedBeats.size !== pattern.length) {
+            selectedBeats.clear();
+            return;
+        }
+
+        const allBeatsCorrect = pattern.every(beat => selectedBeats.has(beat));
+        if (allBeatsCorrect) {
+            // クリック回数が100回以下かチェック
+            if (clickCounts.getTotal() <= 100) {
+                clearedStages.add(currentStage);
+                currentStage++;
+                updateStageContent();
+            } else {
+
+            }
+        }
+        selectedBeats.clear();
+        return;
+    }
+
     // 通常ステージの判定
     const pattern = correctPatterns[currentStage];
     if (!pattern || selectedBeats.size !== pattern.length) {
@@ -1042,6 +1133,7 @@ function updateTimeFromClick(event, forceUpdate = false) {
 }
 
 playButton.addEventListener('click', () => {
+    clickCounts.play++;
     if (isPlaying) {
         audio.pause();
         playIcon.src = 'assets/images/controls/play.png';
@@ -1059,6 +1151,7 @@ audio.addEventListener('ended', () => {
 });
 
 prevButton.addEventListener('click', () => {
+    clickCounts.prev++;
     if (currentStage > 0) {
         currentStage--;
         updateStageContent();
@@ -1066,7 +1159,8 @@ prevButton.addEventListener('click', () => {
 });
 
 nextButton.addEventListener('click', () => {
-    if (currentStage === 24) return;
+    clickCounts.next++;
+    if (currentStage === 17) return;
 
     if (clearedStages.has(currentStage)) {
         currentStage++;

@@ -306,3 +306,7 @@ body.stage-23 { background-color: #5D4037; }
 .number-text-char {
     transition: all 0.2s ease;
 }
+
+.progress-bar, .time-display {
+    display: none;  /* シークバーと時間表示を非表示に */
+}
