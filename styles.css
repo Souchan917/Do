@@ -296,3 +296,13 @@ body.stage-23 { background-color: #5D4037; }
     line-height: 1;
     display: inline-block;
 }
+
+.number-text-word {
+    line-height: 1;
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+}
+
+.number-text-char {
+    transition: all 0.2s ease;
+}
