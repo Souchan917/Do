@@ -260,6 +260,20 @@ const STAGE_CONFIGS = {
 
         ]
     },
+    10: {
+        gimmicks: [
+            {
+                type: GIMMICK_TYPES.IMAGE_SEQUENCE,
+                settings: {
+                    x: 50,
+                    y: 50,
+                    size: 30,
+                    images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage10/black${i}.png`),
+                    changeInterval: 60 * 4 / 170 / 4
+                }
+            }
+        ]
+    },
     11: {
         gimmicks: [
             {
@@ -380,8 +394,8 @@ const STAGE_NAMES = [
     "チュートリアル",
     "Do", "イコールの下が答えだ！", "輝き",
     "選択", "0or1", "数式",
-    "道しるべ(きまぐれ)", "夜空", "ーーー",
-    "風船ステージ", "問題を成立させよう！", "西？",
+    "道しるべ(きまぐれ)", "夜空", "おいしい！",
+    "チカチカ", "問題を成立させよう！", "西？",
     "九？", "一週間", "楽器の名前をこたえよう",
     "最終ステージ", "エンディング"
 ];
@@ -397,7 +411,7 @@ const PUZZLE_IMAGES = {
     7: "assets/images/puzzles/puzzle7.png",
     8: "assets/images/puzzles/stage8/puzzlemoon.png",
     9: "assets/images/puzzles/puzzle9.png",
-    10: "assets/images/puzzles/puzzle10.png",
+    10: "assets/images/puzzles/puzzle999.png",
     11: "assets/images/puzzles/puzzle11.png",
     12: "assets/images/puzzles/puzzle12.png",
     13: "assets/images/puzzles/puzzle13.png",
@@ -417,7 +431,7 @@ const STAGE_ANSWERS = {
     6: "十",
     7: "ぼういん",
     8: "つきみ",
-    9: "にじいろ",
+    9: "ーーー",
     10: "ーーー",
     11: "午(うま)",
     12: "インク",
@@ -439,7 +453,7 @@ const stageSettings = {
     7: { dots: 8 },
     8: { dots: 8 },
     9: { dots: 16 },
-    10: { dots: 16 },
+    10: { dots: 8 },
     11: { dots: 16 },
     12: { dots: 16 },
     13: { dots: 16 },
@@ -459,7 +473,7 @@ const correctPatterns = {
     7: [2, 4, 5, 8],
     8: [1],
     9: [1, 2, 3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16],
-    10: [4, 8, 12, 16],
+    10: [1, 2, 4, 7],
     11: [13],
     12: [1, 5, 9],
     13: [1, 2, 3, 4, 5, 9, 13],
