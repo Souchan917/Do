@@ -219,25 +219,24 @@ const STAGE_CONFIGS = {
     },
     7: {
         gimmicks: [
-
             {
-                type: GIMMICK_TYPES.HIRAGANA,
+                type: GIMMICK_TYPES.RHYTHM_DOTS,
                 settings: {
-                    x: 30,
-                    y: 70,
-                    size: 50,
-                    changeInterval: 60 * 4 / 170 / 4,
-                    characters: ['ほ', 'し']
-                }
-            },
-            {
-                type: GIMMICK_TYPES.HIRAGANA,
-                settings: {
-                    x: 70,
-                    y: 70,
-                    size: 50,
-                    changeInterval: 60 * 4 / 170 / 4,
-                    characters: ['そ', 'ら']
+                    x: 50,      // 全体の中心X座標
+                    y: 50,      // 全体の中心Y座標
+                    size: 400,  // 全体のサイズ
+                    dots: [
+                        { x: 40, y: 10, size: 30, beat: 2 },  // 左上
+                        { x: 60, y: 10, size: 30, beat: 7 },  // 右上
+                        { x: 90, y: 40, size: 30, beat: 3 },  // 左から2番目
+                        { x: 90, y: 60, size: 30, beat: 4 },  // 右から2番目
+                        { x: 60, y: 90, size: 30, beat: 8 },  // 左から3番目
+                        { x: 40, y: 90, size: 30, beat: 1 },
+                        { x: 10, y: 60, size: 30, beat: 5 },   // 右から3番目
+                        { x: 10, y: 40, size: 30, beat: 6 }  // 左下
+                          // 右下
+                        
+                    ]
                 }
             }
         ]
@@ -258,16 +257,6 @@ const STAGE_CONFIGS = {
     },
     9: {
         gimmicks: [
-            {
-                type: GIMMICK_TYPES.HIRAGANA,
-                settings: {
-                    x: 30,
-                    y: 50,
-                    size: 80,
-                    changeInterval: 60 * 4 / 170 / 4,
-                    characters: ['春', '夏', '秋', '冬']
-                }
-            },
 
         ]
     },
@@ -389,9 +378,9 @@ const STAGE_CONFIGS = {
 
 const STAGE_NAMES = [
     "チュートリアル",
-    "Do", "イコールの下が答えだ！", "かがやき",
+    "Do", "イコールの下が答えだ！", "輝き",
     "選択", "0or1", "数式",
-    "星空ステージ", "夜空", "ーーー",
+    "道しるべ(きまぐれ)", "夜空", "ーーー",
     "風船ステージ", "問題を成立させよう！", "西？",
     "九？", "一週間", "楽器の名前をこたえよう",
     "最終ステージ", "エンディング"
@@ -426,7 +415,7 @@ const STAGE_ANSWERS = {
     4: "せんたく",
     5: "ーーー",
     6: "十",
-    7: "ーーー",
+    7: "ぼういん",
     8: "つきみ",
     9: "にじいろ",
     10: "ーーー",
@@ -449,7 +438,7 @@ const stageSettings = {
     6: { dots: 8 },
     7: { dots: 8 },
     8: { dots: 8 },
-    9: { dots: 8 },
+    9: { dots: 16 },
     10: { dots: 16 },
     11: { dots: 16 },
     12: { dots: 16 },
@@ -467,9 +456,9 @@ const correctPatterns = {
     4: [1, 4, 5, 7],
     5: [5, 6, 7, 8],
     6: [4, 8, 12, 16],
-    7: [2, 4, 6, 8],
+    7: [2, 4, 5, 8],
     8: [1],
-    9: [2, 4, 6, 8],
+    9: [1, 2, 3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16],
     10: [4, 8, 12, 16],
     11: [13],
     12: [1, 5, 9],
