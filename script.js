@@ -325,7 +325,7 @@ const STAGE_CONFIGS = {
                         { x: 50, y: 35, size: 25, beat: 1 },  // 左上
                         { x: 73, y: 35, size: 25, beat: 2 },  // 右上
                         { x: 40, y: 80, size: 25, beat: 3 },  // 左から2番目
-                        { x: 27, y: 35, size: 25, beat: 4 },  // 右から2番目
+                        { x: 39, y: 35, size: 25, beat: 4 },  // 右から2番目
                         { x: 61.5, y: 35, size: 25, beat: 5 },  // 左から3番目
                         { x: 84, y: 35, size: 25, beat: 6 },  // 右から3番目
                         { x: 50, y: 80, size: 25, beat: 7 },  // 左下
@@ -396,7 +396,7 @@ const STAGE_CONFIGS = {
                     y: 60,
                     size: 150
                 }
-            }
+            },
         ]
     },
     
@@ -433,6 +433,8 @@ const PUZZLE_IMAGES = {
     17: "assets/images/puzzles/puzzle17.png"
 };
 
+
+
 const STAGE_ANSWERS = {
     0: "ーーー",
     1: "ーーー",
@@ -451,18 +453,110 @@ const STAGE_ANSWERS = {
     14: "てんかい",
     15: "？？？",
     16: "がんばれ～",
-    17: 'クリアおめでとう！ <a href="https://twitter.com/intent/tweet?text=%E3%80%8CDo%E3%80%8D%E3%82%92%E8%A7%A3%E3%81%8D%E6%98%8E%E3%81%8B%E3%81%97%E3%81%9F%EF%BC%81%20%23Do%E8%AC%8E%20%23Player%E8%AC%8E" target="_blank" style="color: #1DA1F2; text-decoration: none;">Xに投稿する</a>'
+    17: "クリアおめでとう！"
 };
+// Twitter共有用の関数を更新
+function shareToTwitter() {
+    const text = encodeURIComponent('「Do」をクリアした！\n#Do謎 #Player謎');
+    const url = encodeURIComponent('https://twitter.com/Souchan917/status/1880596843299737622');
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+}
 
-function updateAnswer() {
-    const answerElement = document.querySelector('.answer-area p');
+// エンディング画面の更新関数を修正
+function updateProblemElements() {
     if (currentStage === 17) {
-        answerElement.innerHTML = STAGE_ANSWERS[currentStage];
+        // エンディング画面用の特別なレイアウト
+        problemArea.innerHTML = `
+            <div style="
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                border-radius: 10px;
+                padding: 20px;
+            ">
+                <p style="
+                    color: #333;
+                    font-size: 16px;
+                    margin-bottom: 20px;
+                    font-family: 'M PLUS Rounded 1c', sans-serif;
+                ">総クリック回数: ${clickCounts.getTotal()}回</p>
+                
+                <div style="
+                    font-size: 48px;
+                    font-weight: bold;
+                    color: #333;
+                    margin-bottom: 30px;
+                    font-family: 'M PLUS Rounded 1c', sans-serif;
+                ">CLEAR</div>
+            </div>
+        `;
+
+        // answer-area を更新
+        const answerArea = document.querySelector('.answer-area');
+        if (answerArea) {
+            answerArea.innerHTML = `
+                <p style="margin-bottom: 20px;">クリアおめでとう！</p>
+                <button 
+                    onclick="shareToTwitter()"
+                    style="
+                        padding: 12px 24px;
+                        background-color: #1DA1F2;
+                        color: white;
+                        border: none;
+                        border-radius: 20px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        font-family: 'M PLUS Rounded 1c', sans-serif;
+                        margin-top: 10px;
+                        z-index: 1000;
+                    "
+                >
+                    Xで共有
+                </button>
+            `;
+        }
     } else {
-        answerElement.textContent = STAGE_ANSWERS[currentStage];
+        gimmickManager.updateGimmick(currentStage, currentTime);
+        gimmickManager.hideAllExcept(currentStage);
     }
 }
 
+// answer-areaの更新関数も修正
+function updateAnswer() {
+    const answerArea = document.querySelector('.answer-area');
+    if (!answerArea) return;
+    
+    answerArea.innerHTML = ''; // 一旦クリア
+
+    const answerText = document.createElement('p');
+    answerText.textContent = STAGE_ANSWERS[currentStage];
+    answerArea.appendChild(answerText);
+    
+    // エンディング画面の場合
+    if (currentStage === 17) {
+        const shareButton = document.createElement('button');
+        shareButton.textContent = 'Xで共有';
+        shareButton.onclick = shareToTwitter;
+        shareButton.style.cssText = `
+            padding: 12px 24px;
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            margin-top: 15px;
+            z-index: 1000;
+        `;
+        
+        answerArea.appendChild(shareButton);
+    }
+}
 
 const stageSettings = {
     0: { dots: 4 },
