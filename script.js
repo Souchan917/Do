@@ -479,6 +479,7 @@ const STAGE_ANSWERS = {
 };
 // Twitter共有用の関数を更新
 function shareToTwitter() {
+    clickCounts.play++; // クリック回数を増やす
     const text = encodeURIComponent('「Do」をクリアした！\n#Do謎 #Player謎');
     const url = encodeURIComponent('https://twitter.com/Souchan917/status/1880596843299737622');
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
