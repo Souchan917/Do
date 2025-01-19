@@ -63,7 +63,7 @@ body.stage-23 { background-color: #5D4037; }
     width: 100%;
     max-width: 400px;
     padding: 20px;
-    position: relative;  /* この行を追加 */
+  
 }
 
 .problem-area {
@@ -514,7 +514,7 @@ body.stage-16 .reset-container.show {
 }
 
 .hint-button {
-    position: absolute;  /* fixedから absoluteに変更 */
+    position: fixed;  /* fixedから absoluteに変更 */
     top: 20px;
     left: 20px;
     width: 40px;
