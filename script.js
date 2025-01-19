@@ -475,7 +475,7 @@ const STAGE_ANSWERS = {
     14: "てんかい",
     15: "？？？",
     16: "がんばれ～",
-    17: "THANK YOU FOR PLAYING。"
+    17: "THANK YOU FOR PLAYING"
 };
 // Twitter共有用の関数を更新
 function shareToTwitter() {
