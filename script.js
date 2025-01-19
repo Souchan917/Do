@@ -1547,10 +1547,10 @@ class AssetLoader {
     }
 }
 
-// ステージごとのヒント表示に必要なループ回数を定義
+// ヒントが表示されるまでのループ回数を定義
 const STAGE_HINT_LOOPS = {
     0: 999,  // チュートリアルはヒント非表示
-    1: 10,    // 比較的簡単なステージは早めに表示
+    1: 10,   // 比較的簡単なステージは早めに表示
     2: 15,
     3: 30,
     4: 15,
@@ -1565,24 +1565,42 @@ const STAGE_HINT_LOOPS = {
     13: 15,
     14: 20,
     15: 20,
-    16: 999,   // 最終ステージは少し長めに
-    17: 999   // エンディングはヒント非表示
+    16: 999,  // 最終ステージは非表示
+    17: 999   // エンディングは非表示
+};
+
+// ヒントモーダルで表示する答えのテキスト
+const HINT_ANSWERS = {
+    0: "チュートリアルステージです",
+    1: "黒黒・黒",
+    2: "・黒・・・黒・黒",
+    3: "黒黒・・",
+    4: "黒・・黒黒・黒・",
+    5: "・・・・黒黒黒黒",
+    6: "黒黒・・黒黒黒・",
+    7: "・黒・黒黒・・黒",
+    8: "黒・・・・・・・",
+    9: "黒黒黒・黒黒黒・黒黒黒黒黒黒黒黒",
+    10: "黒黒・黒・・黒・",
+    11: "・・・・・・・・・・・・黒・・・\n（点の個数を干支にする）",
+    12: "黒・・・黒・・・黒・・・・・・・\n（九九/ニシガハチ、サザンガク、インクガク）",
+    13: "黒黒黒黒黒・・・黒・・・黒・・・\n（点の個数/西の漢字の上部分を隠すと四という漢字になる）",
+    14: "・・・・・・黒黒\n（水金地火木土天海）",
+    15: "黒・・・・黒・・\n（ドレミファソラシ・）",
+    16: "総クリック回数を100回以内に抑えてください。",
+    17: "おめでとうございます！"
 };
 
 // ヒントシステムの初期化
 function initializeHintSystem() {
     const hintButton = document.getElementById('hintButton');
     const hintModal = document.getElementById('hintModal');
-    const hintText = document.getElementById('hintText');
-    const closeButton = document.querySelector('.hint-close');
+    const stageLoopCounts = {};  // ステージごとのループカウント
 
-    // ステージごとのループカウントを保持するオブジェクト
-    const stageLoopCounts = {};
-    
     // ヒントボタンの表示/非表示を制御
     function updateHintButtonVisibility() {
-        // ステージ0（チュートリアル）とステージ17（エンディング）では非表示
-        if (currentStage === 0 || currentStage >= 17) {
+        // チュートリアル、最終ステージ、エンディングでは非表示
+        if (currentStage === 0 || currentStage >= 16) {
             hintButton.classList.add('hidden');
             return;
         }
@@ -1595,8 +1613,8 @@ function initializeHintSystem() {
             stageLoopCounts[currentStage]++;
         }
 
-        // ステージごとに設定された回数以上でヒントを表示
-        const requiredLoops = STAGE_HINT_LOOPS[currentStage] || 12; // デフォルトは12回
+        // 必要なループ回数に達したらヒントボタンを表示
+        const requiredLoops = STAGE_HINT_LOOPS[currentStage] || 12;
         if (stageLoopCounts[currentStage] >= requiredLoops && !clearedStages.has(currentStage)) {
             hintButton.classList.remove('hidden');
         } else {
@@ -1607,10 +1625,54 @@ function initializeHintSystem() {
     // ヒントモーダルを表示
     function showHintModal() {
         const hint = STAGE_HINTS[currentStage];
+        const answer = HINT_ANSWERS[currentStage];
+        
         if (hint) {
-            hintText.textContent = hint;
+            // モーダルの内容を生成
+            hintModal.innerHTML = `
+                <div class="hint-content">
+                    <h3>ヒント</h3>
+                    <p>${hint}</p>
+                    <div class="hint-answer" id="hintAnswer">${answer}</div>
+                    <div class="hint-buttons">
+                        <button class="hint-show-answer hint-button-base" id="showAnswerButton">
+                            答えを見る
+                        </button>
+                        <button class="hint-close hint-button-base">
+                            閉じる
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // イベントリスナーを設定
+            setupModalEventListeners();
+
+            // モーダルを表示
             hintModal.classList.add('show');
         }
+    }
+
+    // モーダルのイベントリスナーを設定
+    function setupModalEventListeners() {
+        const closeButton = hintModal.querySelector('.hint-close');
+        const showAnswerButton = document.getElementById('showAnswerButton');
+        const answerElement = document.getElementById('hintAnswer');
+
+        closeButton.addEventListener('click', hideHintModal);
+        
+        showAnswerButton.addEventListener('click', () => {
+            answerElement.classList.add('show');
+            showAnswerButton.style.opacity = '0.5';
+            showAnswerButton.disabled = true;
+        });
+
+        // モーダル外クリックで閉じる
+        hintModal.addEventListener('click', (e) => {
+            if (e.target === hintModal) {
+                hideHintModal();
+            }
+        });
     }
 
     // ヒントモーダルを非表示
@@ -1618,34 +1680,27 @@ function initializeHintSystem() {
         hintModal.classList.remove('show');
     }
 
-    // イベントリスナーの設定
+    // ヒントボタンのクリックイベント
     hintButton.addEventListener('click', showHintModal);
-    closeButton.addEventListener('click', hideHintModal);
-    hintModal.addEventListener('click', (e) => {
-        if (e.target === hintModal) {
-            hideHintModal();
-        }
-    });
 
-    // ステージ変更時にループカウントをリセット
+    // ステージ変更時の処理をオーバーライド
     const originalUpdateStageContent = window.updateStageContent;
     window.updateStageContent = function() {
         originalUpdateStageContent.apply(this, arguments);
-        // 新しいステージに移動した時はループカウントをリセット
         if (!stageLoopCounts[currentStage]) {
             stageLoopCounts[currentStage] = 0;
         }
         updateHintButtonVisibility();
     };
 
-    // リズムパターンチェック後にヒントボタンの表示状態を更新
+    // リズムパターンチェック後の処理をオーバーライド
     const originalCheckRhythmPattern = window.checkRhythmPattern;
     window.checkRhythmPattern = function() {
         originalCheckRhythmPattern.apply(this, arguments);
         updateHintButtonVisibility();
     };
 
-    // 音楽ループ完了時にヒントボタンの表示状態を更新
+    // 音楽ループ完了時の処理をオーバーライド
     const originalUpdateRhythmDots = window.updateRhythmDots;
     window.updateRhythmDots = function() {
         originalUpdateRhythmDots.apply(this, arguments);
@@ -1654,11 +1709,11 @@ function initializeHintSystem() {
         }
     };
 
-    // 初期状態の設定
+    // 初期状態のセットアップ
     updateHintButtonVisibility();
 }
 
-// 初期化関数に組み込む
+// initialize関数に組み込む
 const originalInitialize = initialize;
 initialize = async function() {
     await originalInitialize.apply(this, arguments);

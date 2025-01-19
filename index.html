@@ -37,14 +37,25 @@
             <button id="startButton" class="modal-button">OK</button>
         </div>
     </div>
+    <!-- ヒントボタンはそのまま -->
     <div id="hintButton" class="hint-button hidden">
         <img src="assets/images/controls/hint.png" alt="Hint">
     </div>
+
+    <!-- ヒントモーダルを修正 -->
     <div id="hintModal" class="hint-modal hidden">
         <div class="hint-content">
             <h3>ヒント</h3>
             <p id="hintText"></p>
-            <button class="hint-close">閉じる</button>
+            <div class="hint-answer" id="hintAnswer"></div>
+            <div class="hint-buttons">
+                <button class="hint-show-answer hint-button-base" id="showAnswerButton">
+                    答えを見る
+                </button>
+                <button class="hint-close hint-button-base">
+                    閉じる
+                </button>
+            </div>
         </div>
     </div>
 

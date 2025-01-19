@@ -526,8 +526,13 @@ body.stage-16 .reset-container.show {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: all 0.3s ease;
     z-index: 1000;
+}
+
+.hint-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 7px rgba(0,0,0,0.3);
 }
 
 .hint-button.hidden {
@@ -565,35 +570,93 @@ body.stage-16 .reset-container.show {
 
 .hint-content {
     background-color: white;
-    padding: 20px;
-    border-radius: 10px;
+    padding: 25px;
+    border-radius: 15px;
     max-width: 90%;
     width: 400px;
     color: #333;
     font-family: 'M PLUS Rounded 1c', sans-serif;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .hint-content h3 {
-    font-size: 20px;
+    font-size: 22px;
     margin-bottom: 15px;
     text-align: center;
+    color: #2c3e50;
 }
 
 .hint-content p {
     font-size: 16px;
     line-height: 1.6;
     margin-bottom: 20px;
+    color: #34495e;
 }
 
-.hint-close {
+/* ヒントの答え表示エリア */
+.hint-answer {
+    margin: 15px 0;
+    padding: 12px;
+    background-color: #f7f9fc;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+    display: none;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.hint-answer.show {
     display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
+    transform: translateY(0);
+}
+
+/* ボタンコンテナ */
+.hint-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* 共通のボタンスタイル */
+.hint-button-base {
+    flex: 1;
+    padding: 12px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
     font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+/* 閉じるボタン */
+.hint-close {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.hint-close:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* 答えを見るボタン */
+.hint-show-answer {
+    background-color: #3498db;
+    color: white;
+}
+
+.hint-show-answer:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.hint-show-answer:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
