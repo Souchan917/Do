@@ -1758,5 +1758,26 @@ async function initialize() {
     startButton.addEventListener('click', startGame);
 }
 
+
+document.addEventListener('keydown', (event) => {
+    // エンターキー(13)またはスペースキー(32)が押された場合
+    if (event.keyCode === 13 || event.keyCode === 32) {
+        // デフォルトの動作を防止（スペースキーでのスクロールなど）
+        event.preventDefault();
+        
+        // 次へボタンのクリックをシミュレート
+        const nextButton = document.getElementById('nextButton');
+        if (nextButton) {
+            nextButton.click();
+            
+            // クリックエフェクトを追加（オプション）
+            nextButton.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                nextButton.style.transform = 'scale(1)';
+            }, 100);
+        }
+    }
+});
+
 // 初期化実行
 initialize();
