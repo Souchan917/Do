@@ -473,7 +473,7 @@ const STAGE_ANSWERS = {
     12: "インク",
     13: "七",
     14: "てんかい",
-    15: "？？？",
+    15: "？？",
     16: "",
     17: "THANK YOU FOR PLAYING"
 };
