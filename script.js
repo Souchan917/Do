@@ -267,7 +267,7 @@ const STAGE_CONFIGS = {
                 settings: {
                     x: 50,
                     y: 50,
-                    size: 30,
+                    size: 150,
                     images: Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage10/black${i}.png`),
                     changeInterval: 60 * 4 / 170 / 4
                 }
