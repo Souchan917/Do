@@ -1459,6 +1459,7 @@ class AssetLoader {
         this.loadedAssets = 0;
         this.loadingScreen = document.getElementById('loadingScreen');
         this.progressText = this.loadingScreen.querySelector('.loading-progress');
+        this.audio = new Audio('assets/audio/MUSIC.mp3');
     }
 
     updateLoadingProgress() {
@@ -1507,20 +1508,38 @@ class AssetLoader {
                 });
             });
 
-            // オーディオのプリロード
+            // オーディオの完全なロード
             const audioPromise = new Promise((resolve, reject) => {
-                const tempAudio = new Audio('assets/audio/MUSIC.mp3');
-                tempAudio.addEventListener('canplaythrough', () => {
-                    this.loadedAssets++;
+                let loaded = false;
+                
+                // データの完全なロードを待つ
+                this.audio.addEventListener('loadeddata', () => {
+                    // 音声データの一部がロードされた
                     this.updateLoadingProgress();
-                    resolve();
-                }, { once: true });
-                tempAudio.addEventListener('error', reject);
-                tempAudio.load();
+                });
+
+                // 再生可能になるまで待つ
+                this.audio.addEventListener('canplaythrough', () => {
+                    if (!loaded) {
+                        loaded = true;
+                        this.loadedAssets++;
+                        this.updateLoadingProgress();
+                        resolve(this.audio);
+                    }
+                });
+
+                this.audio.addEventListener('error', reject);
+                
+                // 明示的にロード開始
+                this.audio.load();
             });
 
-            await Promise.all([...imagePromises, audioPromise]);
+            // すべてのアセットのロード完了を待つ
+            const [loadedAudio] = await Promise.all([audioPromise, ...imagePromises]);
             
+            // グローバルのaudio要素に設定
+            window.audio = loadedAudio;
+
             // ローディング画面をフェードアウト
             this.loadingScreen.classList.add('fade-out');
             await new Promise(resolve => setTimeout(resolve, 500));
