@@ -1134,37 +1134,6 @@ function updateRhythmDots() {
 }
 
 function checkRhythmPattern() {
-    // ステージ6の特殊判定
-    if (currentStage === 6) {
-        // 前半と後半のドット数をカウント
-        let firstHalfCount = 0;
-        let secondHalfCount = 0;
-        
-        // 前半（1-4拍）のカウント
-        for (let i = 1; i <= 4; i++) {
-            if (selectedBeats.has(i)) {
-                firstHalfCount++;
-            }
-        }
-        
-        // 後半（5-8拍）のカウント
-        for (let i = 5; i <= 8; i++) {
-            if (selectedBeats.has(i)) {
-                secondHalfCount++;
-            }
-        }
-
-        // 正解判定: 前半が2回、後半が3回
-        if (firstHalfCount === 2 && secondHalfCount === 3) {
-            clearedStages.add(currentStage);
-            currentStage++;
-            updateStageContent();
-        }
-        
-        selectedBeats.clear();
-        return;
-    }
-
     if (currentStage === 16) {
         const pattern = correctPatterns[currentStage];
         if (!pattern || selectedBeats.size !== pattern.length) {
@@ -1177,7 +1146,7 @@ function checkRhythmPattern() {
             // クリック回数が100回以下かチェック
             if (clickCounts.getTotal() <= 100) {
                 clearedStages.add(currentStage);
-                currentStage++;
+                currentStage = 17;  // 直接17に設定
                 hasReachedEnding = true;  // エンディングフラグを立てる
                 updateStageContent();
             } else {
@@ -1192,21 +1161,7 @@ function checkRhythmPattern() {
         return;
     }
 
-    // 通常ステージの判定
-    const pattern = correctPatterns[currentStage];
-    if (!pattern || selectedBeats.size !== pattern.length) {
-        selectedBeats.clear();
-        return;
-    }
-
-    const allBeatsCorrect = pattern.every(beat => selectedBeats.has(beat));
-    if (allBeatsCorrect) {
-        clearedStages.add(currentStage);
-        currentStage++;
-        updateStageContent();
-    }
-    
-    selectedBeats.clear();
+    // 他のステージの処理...
 }
 //====================================================
 // UI更新関数
