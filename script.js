@@ -1,4 +1,3 @@
-
 const playButton = document.getElementById('playButton');
 const playIcon = document.getElementById('playIcon');
 const prevButton = document.getElementById('prevButton');
@@ -1443,7 +1442,7 @@ const debugTools = {
 // ステージ更新時にセレクトボックスも更新
 const originalUpdateStageContent = updateStageContent;
 updateStageContent = function() {
-    originalUpdateStageContent();
+    originalUpdateStageContent.apply(this, arguments);
     const stageSelect = document.getElementById('stageSelect');
     if (stageSelect) {
         stageSelect.value = currentStage;
@@ -1483,60 +1482,58 @@ class AssetLoader {
     }
 
     async loadAll() {
-        // 画像のリストを作成
-        const imageList = [
-            ...Object.values(PUZZLE_IMAGES),
-            'assets/images/controls/play.png',
-            'assets/images/controls/pause.png',
-            'assets/images/controls/prev.png',
-            'assets/images/controls/next.png'
-        ];
+        try {
+            // 画像のリストを作成
+            const imageList = [
+                // パズル画像
+                ...Object.values(PUZZLE_IMAGES),
+                
+                // コントロール画像
+                'assets/images/controls/play.png',
+                'assets/images/controls/pause.png',
+                'assets/images/controls/prev.png',
+                'assets/images/controls/next.png',
+                'assets/images/controls/hint.png',
 
-        // Stage 7の星の画像
-        for (let i = 0; i < 8; i++) {
-            imageList.push(`assets/images/puzzles/stage8/moon${i}.png`);
-        }
+                // Stage 8の月の画像
+                ...Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage8/moon${i}.png`),
 
-        // Stage 8の月の画像
-        for (let i = 0; i < 8; i++) {
-            imageList.push(`assets/images/puzzles/stage8/moon${i}.png`);
-        }
+                // Stage 10の画像
+                ...Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage10/black${i}.png`),
 
-        // Wall画像
-        for (let i = 0; i < 16; i++) {
-            imageList.push(`assets/images/puzzles/wall/wall${i}.png`);
-        }
+                // Wall画像
+                ...Array.from({ length: 16 }, (_, i) => `assets/images/puzzles/wall/wall${i}.png`)
+            ];
 
-        this.totalAssets = imageList.length + 1; // +1 for audio
-        this.loadedAssets = 0;
+            this.totalAssets = imageList.length + 1; // +1 for audio
+            this.loadedAssets = 0;
 
-        // 画像のプリロード
-        const imagePromises = imageList.map(src => {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => {
+            // 画像のプリロード
+            const imagePromises = imageList.map(src => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.loadedAssets++;
+                        this.updateLoadingProgress();
+                        resolve();
+                    };
+                    img.onerror = reject;
+                    img.src = src;
+                });
+            });
+
+            // オーディオのプリロード
+            const audioPromise = new Promise((resolve, reject) => {
+                const tempAudio = new Audio('assets/audio/MUSIC.mp3');
+                tempAudio.addEventListener('canplaythrough', () => {
                     this.loadedAssets++;
                     this.updateLoadingProgress();
                     resolve();
-                };
-                img.onerror = reject;
-                img.src = src;
+                }, { once: true });
+                tempAudio.addEventListener('error', reject);
+                tempAudio.load();
             });
-        });
 
-        // オーディオのプリロード
-        const audioPromise = new Promise((resolve, reject) => {
-            const tempAudio = new Audio('assets/audio/MUSIC.mp3');
-            tempAudio.addEventListener('canplaythrough', () => {
-                this.loadedAssets++;
-                this.updateLoadingProgress();
-                resolve();
-            }, { once: true });
-            tempAudio.addEventListener('error', reject);
-            tempAudio.load();
-        });
-
-        try {
             await Promise.all([...imagePromises, audioPromise]);
             this.loadingText.remove();
             return true;
