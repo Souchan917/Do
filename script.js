@@ -1457,31 +1457,15 @@ class AssetLoader {
     constructor() {
         this.totalAssets = 0;
         this.loadedAssets = 0;
-        this.loadingText = document.createElement('div');
-        this.setupLoadingUI();
-    }
-
-    setupLoadingUI() {
-        this.loadingText.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 18px;
-            font-family: 'M PLUS Rounded 1c', sans-serif;
-            text-align: center;
-            z-index: 10000;
-        `;
-        document.body.appendChild(this.loadingText);
+        this.loadingScreen = document.getElementById('loadingScreen');
+        this.progressText = this.loadingScreen.querySelector('.loading-progress');
     }
 
     updateLoadingProgress() {
         const percentage = Math.floor((this.loadedAssets / this.totalAssets) * 100);
-        this.loadingText.textContent = `Loading... ${percentage}%`;
+        this.progressText.textContent = `${percentage}%`;
     }
 
-    
     async loadAll() {
         try {
             // 画像のリストを作成
@@ -1536,11 +1520,16 @@ class AssetLoader {
             });
 
             await Promise.all([...imagePromises, audioPromise]);
-            this.loadingText.remove();
+            
+            // ローディング画面をフェードアウト
+            this.loadingScreen.classList.add('fade-out');
+            await new Promise(resolve => setTimeout(resolve, 500));
+            this.loadingScreen.style.display = 'none';
+            
             return true;
         } catch (error) {
             console.error('Asset loading failed:', error);
-            this.loadingText.textContent = 'Loading failed. Please refresh the page.';
+            this.progressText.textContent = 'Loading failed. Please refresh.';
             return false;
         }
     }
