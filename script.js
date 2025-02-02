@@ -1220,6 +1220,41 @@ function updateProgress() {
 }
 
 function updateStageContent() {
+    // ステージ17に到達したらカウンターを完全に停止
+    if (currentStage === 17) {
+        // イベントリスナーを完全に削除
+        nextButton.removeEventListener('click', handleNextClick);
+        prevButton.removeEventListener('click', handlePrevClick);
+        playButton.removeEventListener('click', handlePlayClick);
+        
+        // 新しいイベントリスナーを追加（クリックカウントなし）
+        nextButton.addEventListener('click', () => {
+            if (clearedStages.has(currentStage)) {
+                currentStage++;
+                updateStageContent();
+            }
+        });
+        
+        prevButton.addEventListener('click', () => {
+            if (currentStage > 0) {
+                currentStage--;
+                updateStageContent();
+            }
+        });
+        
+        playButton.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                playIcon.src = 'assets/images/controls/play.png';
+            } else {
+                audio.play();
+                playIcon.src = 'assets/images/controls/pause.png';
+            }
+            isPlaying = !isPlaying;
+        });
+    }
+
+    // 既存のupdateStageContentの処理を続ける
     titleArea.textContent = STAGE_NAMES[currentStage];
     updatePuzzleImage();
     updateBackgroundColor();
