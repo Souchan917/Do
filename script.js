@@ -1761,7 +1761,11 @@ async function initialize() {
     };
 
     // OKボタンのクリックイベント
-    startButton.addEventListener('click', startGame);
+    if (startButton && container) {
+        startButton.addEventListener('click', startGame);
+    } else {
+        console.error('Required elements not found');
+    }
 }
 
 
