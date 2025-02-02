@@ -636,9 +636,6 @@ let holdStartBeat = -1;
 const audio = new Audio('assets/audio/MUSIC.mp3');
 audio.volume = 0.7;
 
-// エンディングに到達したかどうかのフラグを追加
-let hasReachedEnding = false;
-
 //====================================================
 // ギミック管理クラス
 //====================================================
@@ -1134,6 +1131,37 @@ function updateRhythmDots() {
 }
 
 function checkRhythmPattern() {
+    // ステージ6の特殊判定
+    if (currentStage === 6) {
+        // 前半と後半のドット数をカウント
+        let firstHalfCount = 0;
+        let secondHalfCount = 0;
+        
+        // 前半（1-4拍）のカウント
+        for (let i = 1; i <= 4; i++) {
+            if (selectedBeats.has(i)) {
+                firstHalfCount++;
+            }
+        }
+        
+        // 後半（5-8拍）のカウント
+        for (let i = 5; i <= 8; i++) {
+            if (selectedBeats.has(i)) {
+                secondHalfCount++;
+            }
+        }
+
+        // 正解判定: 前半が2回、後半が3回
+        if (firstHalfCount === 2 && secondHalfCount === 3) {
+            clearedStages.add(currentStage);
+            currentStage++;
+            updateStageContent();
+        }
+        
+        selectedBeats.clear();
+        return;
+    }
+
     if (currentStage === 16) {
         const pattern = correctPatterns[currentStage];
         if (!pattern || selectedBeats.size !== pattern.length) {
@@ -1146,8 +1174,7 @@ function checkRhythmPattern() {
             // クリック回数が100回以下かチェック
             if (clickCounts.getTotal() <= 100) {
                 clearedStages.add(currentStage);
-                currentStage = 17;  // 直接17に設定
-                hasReachedEnding = true;  // エンディングフラグを立てる
+                currentStage++;
                 updateStageContent();
             } else {
                 // クリック回数が100を超えた場合、リセットボタンを表示
@@ -1161,7 +1188,21 @@ function checkRhythmPattern() {
         return;
     }
 
-    // 他のステージの処理...
+    // 通常ステージの判定
+    const pattern = correctPatterns[currentStage];
+    if (!pattern || selectedBeats.size !== pattern.length) {
+        selectedBeats.clear();
+        return;
+    }
+
+    const allBeatsCorrect = pattern.every(beat => selectedBeats.has(beat));
+    if (allBeatsCorrect) {
+        clearedStages.add(currentStage);
+        currentStage++;
+        updateStageContent();
+    }
+    
+    selectedBeats.clear();
 }
 //====================================================
 // UI更新関数
@@ -1176,53 +1217,6 @@ function updateProgress() {
 }
 
 function updateStageContent() {
-    // ステージ17に到達したらカウンターを完全に停止
-    if (currentStage === 17) {
-        hasReachedEnding = true;  // エンディングフラグを立てる
-        
-        // 既存のイベントリスナーを全て削除
-        const newNextButton = nextButton.cloneNode(true);
-        const newPrevButton = prevButton.cloneNode(true);
-        const newPlayButton = playButton.cloneNode(true);
-        
-        nextButton.parentNode.replaceChild(newNextButton, nextButton);
-        prevButton.parentNode.replaceChild(newPrevButton, prevButton);
-        playButton.parentNode.replaceChild(newPlayButton, playButton);
-        
-        // グローバル変数の参照を更新
-        nextButton = newNextButton;
-        prevButton = newPrevButton;
-        playButton = newPlayButton;
-        playIcon = playButton.querySelector('img');
-        
-        // 新しいイベントリスナーを設定
-        playButton.addEventListener('click', () => {
-            if (isPlaying) {
-                audio.pause();
-                playIcon.src = 'assets/images/controls/play.png';
-            } else {
-                audio.play();
-                playIcon.src = 'assets/images/controls/pause.png';
-            }
-            isPlaying = !isPlaying;
-        });
-        
-        prevButton.addEventListener('click', () => {
-            if (currentStage > 0) {
-                currentStage--;
-                updateStageContent();
-            }
-        });
-        
-        nextButton.addEventListener('click', () => {
-            if (currentStage < 17 && clearedStages.has(currentStage)) {
-                currentStage++;
-                updateStageContent();
-            }
-        });
-    }
-
-    // 既存のupdateStageContentの処理を続ける
     titleArea.textContent = STAGE_NAMES[currentStage];
     updatePuzzleImage();
     updateBackgroundColor();
@@ -1276,11 +1270,7 @@ function updateTimeFromClick(event, forceUpdate = false) {
 }
 
 playButton.addEventListener('click', () => {
-    // エンディングに到達していない場合のみカウント
-    if (!hasReachedEnding) {
-        clickCounts.play++;
-    }
-
+    clickCounts.play++;
     if (isPlaying) {
         audio.pause();
         playIcon.src = 'assets/images/controls/play.png';
@@ -1298,11 +1288,7 @@ audio.addEventListener('ended', () => {
 });
 
 prevButton.addEventListener('click', () => {
-    // エンディングに到達していない場合のみカウント
-    if (!hasReachedEnding) {
-        clickCounts.prev++;
-    }
-
+    clickCounts.prev++;
     if (currentStage > 0) {
         currentStage--;
         updateStageContent();
@@ -1310,15 +1296,8 @@ prevButton.addEventListener('click', () => {
 });
 
 nextButton.addEventListener('click', () => {
-    // エンディングに到達していない場合のみカウント
-    if (!hasReachedEnding) {
-        clickCounts.next++;
-    }
-
-    if (currentStage === 17) {
-        hasReachedEnding = true;  // エンディングに到達したらフラグを立てる
-        return;
-    }
+    clickCounts.next++;
+    if (currentStage === 17) return;
 
     if (clearedStages.has(currentStage)) {
         currentStage++;
@@ -1478,21 +1457,31 @@ class AssetLoader {
     constructor() {
         this.totalAssets = 0;
         this.loadedAssets = 0;
-        this.loadingBar = document.querySelector('.loading-bar');
-        this.loadingText = document.getElementById('loadingProgress');
-        this.loadingContainer = document.getElementById('loadingContainer');
+        this.loadingText = document.createElement('div');
+        this.setupLoadingUI();
+    }
+
+    setupLoadingUI() {
+        this.loadingText.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            text-align: center;
+            z-index: 10000;
+        `;
+        document.body.appendChild(this.loadingText);
     }
 
     updateLoadingProgress() {
         const percentage = Math.floor((this.loadedAssets / this.totalAssets) * 100);
-        if (this.loadingBar) {
-            this.loadingBar.style.width = `${percentage}%`;
-        }
-        if (this.loadingText) {
-            this.loadingText.textContent = percentage;
-        }
+        this.loadingText.textContent = `Loading... ${percentage}%`;
     }
 
+    
     async loadAll() {
         try {
             // 画像のリストを作成
@@ -1546,22 +1535,12 @@ class AssetLoader {
                 tempAudio.load();
             });
 
-            // すべてのアセットのロード完了を待つ
             await Promise.all([...imagePromises, audioPromise]);
-            
-            // ローディング完了のアニメーション
-            if (this.loadingContainer) {
-                this.loadingContainer.classList.add('loading-complete');
-                await new Promise(resolve => setTimeout(resolve, 500));
-                this.loadingContainer.style.display = 'none';
-            }
-            
+            this.loadingText.remove();
             return true;
         } catch (error) {
             console.error('Asset loading failed:', error);
-            if (this.loadingText) {
-                this.loadingText.textContent = 'Loading failed. Please refresh.';
-            }
+            this.loadingText.textContent = 'Loading failed. Please refresh the page.';
             return false;
         }
     }
