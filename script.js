@@ -1481,6 +1481,7 @@ class AssetLoader {
         this.loadingText.textContent = `Loading... ${percentage}%`;
     }
 
+    
     async loadAll() {
         try {
             // 画像のリストを作成
