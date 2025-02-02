@@ -1225,22 +1225,23 @@ function updateStageContent() {
     if (currentStage === 17) {
         hasReachedEnding = true;  // エンディングフラグを立てる
         
-        // イベントリスナーを完全に削除して新しいものに置き換える
-        const newNextClick = () => {
-            if (currentStage < 17 && clearedStages.has(currentStage)) {
-                currentStage++;
-                updateStageContent();
-            }
-        };
+        // 既存のイベントリスナーを全て削除
+        const newNextButton = nextButton.cloneNode(true);
+        const newPrevButton = prevButton.cloneNode(true);
+        const newPlayButton = playButton.cloneNode(true);
         
-        const newPrevClick = () => {
-            if (currentStage > 0) {
-                currentStage--;
-                updateStageContent();
-            }
-        };
+        nextButton.parentNode.replaceChild(newNextButton, nextButton);
+        prevButton.parentNode.replaceChild(newPrevButton, prevButton);
+        playButton.parentNode.replaceChild(newPlayButton, playButton);
         
-        const newPlayClick = () => {
+        // グローバル変数の参照を更新
+        nextButton = newNextButton;
+        prevButton = newPrevButton;
+        playButton = newPlayButton;
+        playIcon = playButton.querySelector('img');
+        
+        // 新しいイベントリスナーを設定
+        playButton.addEventListener('click', () => {
             if (isPlaying) {
                 audio.pause();
                 playIcon.src = 'assets/images/controls/play.png';
@@ -1249,12 +1250,21 @@ function updateStageContent() {
                 playIcon.src = 'assets/images/controls/pause.png';
             }
             isPlaying = !isPlaying;
-        };
-
-        // 既存のイベントリスナーを新しいものに置き換え
-        nextButton.addEventListener('click', newNextClick);
-        prevButton.addEventListener('click', newPrevClick);
-        playButton.addEventListener('click', newPlayClick);
+        });
+        
+        prevButton.addEventListener('click', () => {
+            if (currentStage > 0) {
+                currentStage--;
+                updateStageContent();
+            }
+        });
+        
+        nextButton.addEventListener('click', () => {
+            if (currentStage < 17 && clearedStages.has(currentStage)) {
+                currentStage++;
+                updateStageContent();
+            }
+        });
     }
 
     // 既存のupdateStageContentの処理を続ける
