@@ -1179,6 +1179,7 @@ function checkRhythmPattern() {
                 clearedStages.add(currentStage);
                 currentStage++;
                 updateStageContent();
+                hasReachedEnding = true;  // エンディングフラグを立てる
             } else {
                 // クリック回数が100を超えた場合、リセットボタンを表示
                 const resetContainer = document.getElementById('resetContainer');
@@ -1222,27 +1223,24 @@ function updateProgress() {
 function updateStageContent() {
     // ステージ17に到達したらカウンターを完全に停止
     if (currentStage === 17) {
-        // イベントリスナーを完全に削除
-        nextButton.removeEventListener('click', handleNextClick);
-        prevButton.removeEventListener('click', handlePrevClick);
-        playButton.removeEventListener('click', handlePlayClick);
+        hasReachedEnding = true;  // エンディングフラグを立てる
         
-        // 新しいイベントリスナーを追加（クリックカウントなし）
-        nextButton.addEventListener('click', () => {
-            if (clearedStages.has(currentStage)) {
+        // イベントリスナーを完全に削除して新しいものに置き換える
+        const newNextClick = () => {
+            if (currentStage < 17 && clearedStages.has(currentStage)) {
                 currentStage++;
                 updateStageContent();
             }
-        });
+        };
         
-        prevButton.addEventListener('click', () => {
+        const newPrevClick = () => {
             if (currentStage > 0) {
                 currentStage--;
                 updateStageContent();
             }
-        });
+        };
         
-        playButton.addEventListener('click', () => {
+        const newPlayClick = () => {
             if (isPlaying) {
                 audio.pause();
                 playIcon.src = 'assets/images/controls/play.png';
@@ -1251,7 +1249,12 @@ function updateStageContent() {
                 playIcon.src = 'assets/images/controls/pause.png';
             }
             isPlaying = !isPlaying;
-        });
+        };
+
+        // 既存のイベントリスナーを新しいものに置き換え
+        nextButton.addEventListener('click', newNextClick);
+        prevButton.addEventListener('click', newPrevClick);
+        playButton.addEventListener('click', newPlayClick);
     }
 
     // 既存のupdateStageContentの処理を続ける
