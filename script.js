@@ -1178,8 +1178,8 @@ function checkRhythmPattern() {
             if (clickCounts.getTotal() <= 100) {
                 clearedStages.add(currentStage);
                 currentStage++;
-                updateStageContent();
                 hasReachedEnding = true;  // エンディングフラグを立てる
+                updateStageContent();
             } else {
                 // クリック回数が100を超えた場合、リセットボタンを表示
                 const resetContainer = document.getElementById('resetContainer');
