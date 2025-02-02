@@ -636,6 +636,9 @@ let holdStartBeat = -1;
 const audio = new Audio('assets/audio/MUSIC.mp3');
 audio.volume = 0.7;
 
+// エンディングに到達したかどうかのフラグを追加
+let hasReachedEnding = false;
+
 //====================================================
 // ギミック管理クラス
 //====================================================
@@ -1270,7 +1273,11 @@ function updateTimeFromClick(event, forceUpdate = false) {
 }
 
 playButton.addEventListener('click', () => {
-    clickCounts.play++;
+    // エンディングに到達していない場合のみカウント
+    if (!hasReachedEnding) {
+        clickCounts.play++;
+    }
+
     if (isPlaying) {
         audio.pause();
         playIcon.src = 'assets/images/controls/play.png';
@@ -1288,7 +1295,11 @@ audio.addEventListener('ended', () => {
 });
 
 prevButton.addEventListener('click', () => {
-    clickCounts.prev++;
+    // エンディングに到達していない場合のみカウント
+    if (!hasReachedEnding) {
+        clickCounts.prev++;
+    }
+
     if (currentStage > 0) {
         currentStage--;
         updateStageContent();
@@ -1296,8 +1307,15 @@ prevButton.addEventListener('click', () => {
 });
 
 nextButton.addEventListener('click', () => {
-    clickCounts.next++;
-    if (currentStage === 17) return;
+    // エンディングに到達していない場合のみカウント
+    if (!hasReachedEnding) {
+        clickCounts.next++;
+    }
+
+    if (currentStage === 17) {
+        hasReachedEnding = true;  // エンディングに到達したらフラグを立てる
+        return;
+    }
 
     if (clearedStages.has(currentStage)) {
         currentStage++;
