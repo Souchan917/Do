@@ -1457,31 +1457,21 @@ class AssetLoader {
     constructor() {
         this.totalAssets = 0;
         this.loadedAssets = 0;
-        this.loadingText = document.createElement('div');
-        this.setupLoadingUI();
-    }
-
-    setupLoadingUI() {
-        this.loadingText.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 18px;
-            font-family: 'M PLUS Rounded 1c', sans-serif;
-            text-align: center;
-            z-index: 10000;
-        `;
-        document.body.appendChild(this.loadingText);
+        this.loadingBar = document.querySelector('.loading-bar');
+        this.loadingText = document.getElementById('loadingProgress');
+        this.loadingContainer = document.getElementById('loadingContainer');
     }
 
     updateLoadingProgress() {
         const percentage = Math.floor((this.loadedAssets / this.totalAssets) * 100);
-        this.loadingText.textContent = `Loading... ${percentage}%`;
+        if (this.loadingBar) {
+            this.loadingBar.style.width = `${percentage}%`;
+        }
+        if (this.loadingText) {
+            this.loadingText.textContent = percentage;
+        }
     }
 
-    
     async loadAll() {
         try {
             // 画像のリストを作成
@@ -1535,12 +1525,22 @@ class AssetLoader {
                 tempAudio.load();
             });
 
+            // すべてのアセットのロード完了を待つ
             await Promise.all([...imagePromises, audioPromise]);
-            this.loadingText.remove();
+            
+            // ローディング完了のアニメーション
+            if (this.loadingContainer) {
+                this.loadingContainer.classList.add('loading-complete');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                this.loadingContainer.style.display = 'none';
+            }
+            
             return true;
         } catch (error) {
             console.error('Asset loading failed:', error);
-            this.loadingText.textContent = 'Loading failed. Please refresh the page.';
+            if (this.loadingText) {
+                this.loadingText.textContent = 'Loading failed. Please refresh.';
+            }
             return false;
         }
     }
