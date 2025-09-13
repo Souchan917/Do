@@ -943,7 +943,7 @@ let lastBeat = -1;
 let isLoopComplete = false;
 let isHolding = false;
 let holdStartBeat = -1;
-const audio = new SeamlessLoopPlayer('assets/audio/MUSIC5.mp3');
+const audio = new SeamlessLoopPlayer('assets/audio/MUSIC.mp3');
 audio.volume = 0.5;
 
 //====================================================
@@ -2019,7 +2019,7 @@ class AssetLoader {
                 img.src = src;
             }));
 
-            const audioBufferPromise = fetch('assets/audio/MUSIC5.mp3', { cache: 'force-cache' })
+            const audioBufferPromise = fetch('assets/audio/MUSIC.mp3', { cache: 'force-cache' })
                 .then(res => { if (!res.ok) throw new Error('Audio fetch failed'); return res.arrayBuffer(); })
                 .then(buf => { this.cache.set('__audioArrayBuffer__', buf); this.loadedAssets++; this.updateLoadingProgress(); return buf; });
 
