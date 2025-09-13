@@ -943,7 +943,7 @@ let lastBeat = -1;
 let isLoopComplete = false;
 let isHolding = false;
 let holdStartBeat = -1;
-const audio = new SeamlessLoopPlayer('assets/audio/MUSIC.mp3');
+const audio = new SeamlessLoopPlayer('assets/audio/MUSIC5.mp3');
 audio.volume = 0.5;
 
 //====================================================
