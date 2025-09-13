@@ -9,7 +9,7 @@ const titleArea = document.querySelector('.title-area h2');
 //====================================================
 // 定数定義
 //====================================================
-const BPM = 175;
+const BPM = 170;
 const BEATS_PER_SECOND = BPM / 60;
 const BEAT_INTERVAL = 60 / BPM; // 1拍の長さ（秒）
 const TOTAL_DURATION = 283; // 4:42 in seconds
