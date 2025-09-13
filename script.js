@@ -9,10 +9,11 @@ const titleArea = document.querySelector('.title-area h2');
 //====================================================
 // 定数定義
 //====================================================
-const BPM = 170;
+const BPM = 175;
 const BEATS_PER_SECOND = BPM / 60;
 const BEAT_INTERVAL = 60 / BPM; // 1拍の長さ（秒）
-const TOTAL_DURATION = 254; // 4:14 in seconds
+const TOTAL_DURATION = 283; // 4:42 in seconds
+
 
 const HIRAGANA = [
     'あ', 'い', 'う', 'え', 'お',
@@ -43,7 +44,8 @@ const GIMMICK_TYPES = {
     DYNAMIC_TEXT_GROUP: 'dynamic_text_group',
     RHYTHM_DOTS: 'rhythm_dots',
     NUMBER_TEXT: 'number_text',
-    CLICK_COUNTER: 'click_counter'  // 新しく追加
+    CLICK_COUNTER: 'click_counter',  // 新しく追加
+    LYRICS: 'lyrics'
 };
 // クリック回数を追跡する変数を追加
 const clickCounts = {
@@ -401,6 +403,115 @@ const STAGE_CONFIGS = {
     
 };
 
+// --- Stage 5 を歌詞表示に差し替え（シンプル実装・他ステージへ非影響）---
+STAGE_CONFIGS[20] = {
+    gimmicks: [
+        {
+            type: GIMMICK_TYPES.LYRICS,
+            settings: {
+                // 位置・サイズ（自由に調整可）
+                x: 50,
+                y: 50,
+                size: 350,
+                // スタイル（自由に調整可）
+                fontSize: 33,
+                lineHeight: 1.3,
+                color: '#111',
+                align: 'center',
+                // 表示モード: 1行ずつのみ表示
+                displayMode: 'current',
+                // タイミング（仮）。時間未指定のときは autoStep で順番に表示
+                autoStartAt: 0,
+                autoStep: 2.5,
+                lineDuration: 2.5,
+                // 歌詞（仮・すべて時間指定、約5分想定）
+                lines: [
+                    { text: "~♪", start: 0.0, end: 17.2 },
+                    { text: "(Don't fight it)", start: 17.2, end: 18.7 },
+                    { text: "(Don't fight it)", start: 18.7, end: 20.2 },
+                    { text: "(Don't fight it)", start: 20.2, end: 21.5 },
+                    { text: "(Don't fight it)", start: 21.5, end: 22.6 },
+                    { text: "~♪", start: 22.6, end: 34.2 },
+                    { text: "Don't fight it", start: 34.2, end: 35.6 },
+                    { text: "Don't fight it", start: 35.6, end: 37.0 },
+                    { text: "Don't fight it", start: 37.0, end: 38.4 },
+                    { text: "(Don't fight it)", start: 38.4, end: 39.8 },
+                    { text: "Don't fight it", start: 39.8, end: 41.2 },
+                    { text: "Don't fight it", start: 41.2, end: 42.6 },
+                    { text: "Don't fight it", start: 42.6, end: 44.0 },
+                    { text: "(Don't fight it)", start: 44.0, end: 45.0 },
+                    { text: "~♪", start: 45.0, end: 51.0 },
+                    { text: "Don't fight it", start: 51.0, end: 52.2 },
+                    { text: "Don't fight it", start: 52.2, end: 53.6 },
+                    { text: "Don't fight it", start: 53.6, end: 55.0 },
+                    { text: "(Don't fight it)", start: 55.0, end: 56.4 },
+                    { text: "~♪", start: 56.4, end: 90.7 },
+                    { text: "Don't fight it", start: 90.7, end: 92.1 },
+                    { text: "Don't fight it", start: 92.1, end: 93.5 },
+                    { text: "Don't fight it", start: 93.5, end: 94.9 },
+                    { text: "(Don't fight it)", start: 94.9, end: 96.3 },
+                    { text: "Don't fight it", start: 96.3, end: 97.7 },
+                    { text: "Don't fight it", start: 97.7, end: 99.1 },
+                    { text: "Don't fight it", start: 99.1, end: 100.5 },
+                    { text: "(Don't fight it)", start: 100.5, end: 101.7 },
+                    { text: "~♪", start: 101.7, end: 136.4 },
+                    { text: "Just like you never broke my heart", start: 136.4, end: 139.4 },
+                    { text: "Like you never said the words", start: 139.4, end: 142.0 },
+                    { text: "Two worlds never further apart", start: 142.0, end: 144.6 },
+                    { text: "Now go", start: 146.4, end: 147.6 },
+                    { text: "And life will never be the same", start: 147.6, end: 150.6 },
+                    { text: "But I will keep on finding my way", start: 150.6, end: 153.5 },
+                    { text: "I'll move on to get to my brighter day", start: 153.5, end: 157.3 },
+                    { text: "~♪", start: 157.3, end: 186.7 },
+                    { text: "(Don't fight it)", start: 186.7, end: 188.2 },
+                    { text: "(Don't fight it)", start: 188.2, end: 189.6 },
+                    { text: "(Don't fight it)", start: 189.6, end: 190.7 },
+                    { text: "~♪", start: 190.7, end: 215.3 },
+                    { text: "Just like you never broke my heart", start: 215.4, end: 218.4 },
+                    { text: "Like you never said the words", start: 218.4, end: 221.3 },
+                    { text: "Two worlds never further apart", start: 221.3, end: 225.4 },
+                    { text: "Now go", start: 225.4, end: 226.6 },
+                    { text: "And I will never be the same", start: 226.6, end: 229.6 },
+                    { text: "But I will keep on finding a way", start: 229.6, end: 232.5 },
+                    { text: "I'll move on to get to a brighter day", start: 232.5, end: 237.5 },
+                    { text: "Don't fight it", start: 237.5, end: 238.9 },
+                    { text: "Don't fight it", start: 238.9, end: 240.3 },
+                    { text: "Don't fight it", start: 240.3, end: 241.2 },
+                    { text: "Like you never said the words", start: 241.2, end: 243.1 },
+                    { text: "Don't fight it", start: 243.1, end: 244.5 },
+                    { text: "Don't fight it", start: 244.5, end: 245.9 },
+                    { text: "(Don't fight it)", start: 245.9, end: 247.3 },
+                    { text: "Don't fight it", start: 247.3, end: 248.7 },
+                    { text: "Don't fight it", start: 248.7, end: 250.1 },
+                    { text: "Don't fight it", start: 250.1, end: 251.5 },
+                    { text: "Don't fight it", start: 251.5, end: 252.5 },
+                    { text: "Like you never said the words", start: 252.5, end: 254.3 },
+                    { text: "Don't fight it", start: 254.3, end: 255.7 },
+                    { text: "Don't fight it", start: 255.7, end: 256.4 },
+                    { text: "I'll move on to get to a brighter day", start: 256.4, end: 259.9 },
+                    { text: "Don't fight it", start: 259.9, end: 261.3 },
+                    { text: "Don't fight it", start: 261.3, end: 262.7 },
+                    { text: "Don't fight it", start: 262.7, end: 264.1 },
+                    { text: "(Don't fight it)", start: 264.1, end: 266.1 },
+                    { text: "Don't fight it", start: 266.1, end: 267.5 },
+                    { text: "Don't fight it", start: 267.5, end: 268.9 },
+                    { text: "Don't fight it", start: 268.9, end: 270.3 },
+                    { text: "(Don't fight it)", start: 270.3, end: 271.4 },
+                    { text: "Don't fight it", start: 271.4, end: 272.8 },
+                    { text: "Don't fight it", start: 272.8, end: 274.2 },
+                    { text: "Don't fight it", start: 274.2, end: 275.6 },
+                    { text: "(Don't fight it)", start: 275.6, end: 277.0 },
+                    { text: "Don't fight it", start: 277.0, end: 278.4 },
+                    { text: "Don't fight it", start: 278.4, end: 279.8 },
+                    { text: "Don't fight it", start: 279.8, end: 281.2 },
+                    { text: "(Don't fight it)", start: 281.2, end: 282.4 },
+                    { text: "~♪", start: 282.4, end: 300.0 }
+                ]
+            }
+        }
+    ]
+};
+
 const STAGE_NAMES = [
     "チュートリアル",
     "Do", "イコールの下が答えだ！", "輝き",
@@ -620,6 +731,205 @@ const correctPatterns = {
     16: [1, 2, 3, 4],
     17: [2, 4, 6, 8]
 };
+
+//====================================================
+// シームレスループ用オーディオプレイヤー（Web Audio API）
+//====================================================
+class SeamlessLoopPlayer {
+    constructor(url) {
+        this.url = url;
+        this.context = null;
+        this.gainNode = null;
+        this.buffer = null;
+        this.source = null;
+        this._volume = 0.7;
+        this._isPlaying = false;
+        this._startTime = 0;    // context currentTime at start
+        this._offset = 0;       // seconds into buffer when stopped/paused
+        this._loopStart = 0;
+        this._loopEnd = 0;      // set after decode
+        this._ready = null;     // Promise for decode
+        this._prefetchedArrayBuffer = null; // AssetLoader から供給される ArrayBuffer を保持
+    }
+
+    get isReady() { return !!this.buffer; }
+
+    async _ensureContext() {
+        if (!this.context) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            this.context = new AC();
+            this.gainNode = this.context.createGain();
+            this.gainNode.gain.value = this._volume;
+            this.gainNode.connect(this.context.destination);
+        }
+        if (this.context.state === 'suspended') {
+            try { await this.context.resume(); } catch (_) {}
+        }
+    }
+
+    async _load() {
+        if (this._ready) return this._ready;
+        this._ready = (async () => {
+            let arrayBuf = this._prefetchedArrayBuffer;
+            if (!arrayBuf) {
+                const res = await fetch(this.url);
+                arrayBuf = await res.arrayBuffer();
+            }
+            await this._ensureContext();
+            const buffer = await this.context.decodeAudioData(arrayBuf.slice(0));
+            this.buffer = buffer;
+            const { loopStart, loopEnd } = SeamlessLoopPlayer._detectLoopPoints(buffer);
+            this._loopStart = loopStart;
+            this._loopEnd = loopEnd;
+            this._prefetchedArrayBuffer = null; // 使い終わったら解放
+        })();
+        return this._ready;
+    }
+
+    // 事前にフェッチ済みの ArrayBuffer を提供（ユーザー操作後の初期化で使用）
+    provideArrayBuffer(arrayBuffer) {
+        if (arrayBuffer && arrayBuffer.byteLength > 0) {
+            this._prefetchedArrayBuffer = arrayBuffer;
+            // 既に別の _ready が走っている最中は触らない
+        }
+    }
+
+    static _detectLoopPoints(buffer) {
+        const sr = buffer.sampleRate;
+        const ch = buffer.numberOfChannels;
+        const len = buffer.length;
+        const thresh = 0.0005;
+        let first = 0;
+        let last = len - 1;
+
+        outerHead:
+        for (let i = 0; i < len; i++) {
+            for (let c = 0; c < ch; c++) {
+                if (Math.abs(buffer.getChannelData(c)[i]) > thresh) { first = i; break outerHead; }
+            }
+        }
+        outerTail:
+        for (let i = len - 1; i >= 0; i--) {
+            for (let c = 0; c < ch; c++) {
+                if (Math.abs(buffer.getChannelData(c)[i]) > thresh) { last = i; break outerTail; }
+            }
+        }
+        let loopStart = Math.max(0, (first / sr) - 0.001);
+        let loopEnd = Math.min(buffer.duration, ((last + 1) / sr) + 0.001);
+        if (!(loopEnd > loopStart + 0.01)) {
+            loopStart = 0;
+            loopEnd = buffer.duration;
+        }
+        return { loopStart, loopEnd };
+    }
+
+    _createSource(startOffsetSec) {
+        if (!this.buffer) return;
+        const src = this.context.createBufferSource();
+        src.buffer = this.buffer;
+        src.loop = true;
+        src.loopStart = this._loopStart;
+        src.loopEnd = this._loopEnd || this.buffer.duration;
+        src.connect(this.gainNode);
+        const offset = this._wrapToLoop(startOffsetSec);
+        src.start(0, offset);
+        this._startTime = this.context.currentTime - offset;
+        this.source = src;
+    }
+
+    _wrapToLoop(sec) {
+        const start = this._loopStart;
+        const end = this._loopEnd || (this.buffer ? this.buffer.duration : 0);
+        const span = Math.max(0.001, end - start);
+        let rel = sec - start;
+        rel = ((rel % span) + span) % span;
+        return start + rel;
+    }
+
+    async play() {
+        await this._ensureContext();
+        await this._load();
+        if (this._isPlaying) return;
+        const v = this._volume;
+        this.gainNode.gain.cancelScheduledValues(this.context.currentTime);
+        this.gainNode.gain.setValueAtTime(0, this.context.currentTime);
+        this.gainNode.gain.linearRampToValueAtTime(v, this.context.currentTime + 0.03);
+        this._createSource(this._offset);
+        this._isPlaying = true;
+    }
+
+    pause() {
+        if (!this._isPlaying) return;
+        const now = this.context.currentTime;
+        const t = now - this._startTime;
+        const dur = this.duration;
+        const rel = dur > 0 ? (t % dur) : 0;
+        this._offset = this._loopStart + rel;
+        try {
+            this.gainNode.gain.cancelScheduledValues(this.context.currentTime);
+            this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.context.currentTime);
+            this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.02);
+        } catch (_) {}
+        try { this.source && this.source.stop(); } catch (_) {}
+        try { this.source && this.source.disconnect(); } catch (_) {}
+        this.source = null;
+        this._isPlaying = false;
+    }
+
+    async _repositionPlayingSource() {
+        if (!this._isPlaying) return;
+        await this._ensureContext();
+        await this._load();
+        const v = this._volume;
+        const now = this.context.currentTime;
+        try {
+            // quick fade-out
+            this.gainNode.gain.cancelScheduledValues(now);
+            this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+            this.gainNode.gain.linearRampToValueAtTime(0, now + 0.005);
+        } catch(_) {}
+        try { this.source && this.source.stop(now + 0.006); } catch(_) {}
+        try { this.source && this.source.disconnect(); } catch(_) {}
+        this.source = null;
+        // start new source at requested offset
+        this._createSource(this._offset);
+        try {
+            // quick fade-in
+            const t = this.context.currentTime;
+            this.gainNode.gain.setValueAtTime(0, t);
+            this.gainNode.gain.linearRampToValueAtTime(v, t + 0.01);
+        } catch(_) {}
+    }
+
+    get currentTime() {
+        if (!this.buffer) return Math.max(0, (this._offset || 0) - this._loopStart);
+        if (!this._isPlaying) return this._wrapToLoop(this._offset) - this._loopStart;
+        const now = this.context.currentTime;
+        const t = now - this._startTime;
+        return this._wrapToLoop(t) - this._loopStart;
+    }
+
+    set currentTime(sec) {
+        this._offset = this._loopStart + Math.max(0, sec);
+        if (this._isPlaying) {
+            // reposition without pausing globally
+            this._repositionPlayingSource();
+        }
+    }
+
+    get duration() {
+        if (!this.buffer) return 0;
+        const start = this._loopStart;
+        const end = this._loopEnd || this.buffer.duration;
+        return Math.max(0, end - start);
+    }
+
+    get volume() { return this._volume; }
+    set volume(v) {
+        this._volume = Math.max(0, Math.min(1, v));
+        if (this.gainNode) this.gainNode.gain.value = this._volume;
+    }
+}
 //====================================================
 // ゲーム状態管理
 //====================================================
@@ -633,8 +943,8 @@ let lastBeat = -1;
 let isLoopComplete = false;
 let isHolding = false;
 let holdStartBeat = -1;
-const audio = new Audio('assets/audio/MUSIC.mp3');
-audio.volume = 0.7;
+const audio = new SeamlessLoopPlayer('assets/audio/MUSIC.mp3');
+audio.volume = 0.5;
 
 //====================================================
 // ギミック管理クラス
@@ -714,6 +1024,26 @@ class GimmickManager {
             });
             
             element.appendChild(container);
+        }
+
+        if (config.type === GIMMICK_TYPES.LYRICS) {
+            // テキストを入れるコンテナ
+            const textWrap = document.createElement('div');
+            textWrap.className = 'lyrics-wrap';
+            textWrap.style.position = 'absolute';
+            textWrap.style.left = '50%';
+            textWrap.style.top = '50%';
+            textWrap.style.transform = 'translate(-50%, -50%)';
+            textWrap.style.width = '100%';
+            textWrap.style.height = '100%';
+            textWrap.style.display = 'flex';
+            textWrap.style.flexDirection = 'column';
+            textWrap.style.justifyContent = 'center';
+            textWrap.style.alignItems = 'center';
+            textWrap.style.pointerEvents = 'none';
+            // Use a lyric-friendly Mincho font
+            textWrap.style.fontFamily = "'Shippori Mincho', 'Noto Serif JP', 'Yu Mincho', 'Hiragino Mincho ProN', 'Hiragino Mincho', 'MS Mincho', serif";
+            element.appendChild(textWrap);
         }
 
         problemArea.appendChild(element);
@@ -809,6 +1139,69 @@ class GimmickManager {
             const isSelected = selectedBeats.has(char.dotIndex + 1);
             charElement.textContent = isSelected ? char.selectedChar : char.defaultChar;
             charElement.style.fontSize = `${textSize * 0.6}px`;
+        });
+    }
+
+    _updateLyricsGimmick(element, config, size, scaleFactor) {
+        const settings = config.settings || {};
+        const fontSize = (settings.fontSize ? settings.fontSize * scaleFactor : size * 0.15);
+        const lineHeight = settings.lineHeight || 1.3;
+        const color = settings.color || '#111';
+        const align = settings.align || 'center';
+        const mode = settings.displayMode || 'accumulate'; // 'accumulate' or 'current'
+        const autoStep = settings.autoStep != null ? settings.autoStep : 2.5; // 秒
+        const autoStartAt = settings.autoStartAt != null ? settings.autoStartAt : 0;
+        const defaultDuration = settings.lineDuration != null ? settings.lineDuration : 2.5;
+
+        let rawLines = settings.lines || settings.lyrics || [];
+        // 正規化: { text, start, end }
+        const entries = rawLines.map((entry, idx) => {
+            if (typeof entry === 'string') {
+                const start = autoStartAt + idx * autoStep;
+                return { text: entry, start, end: start + defaultDuration };
+            }
+            const start = entry.start != null ? entry.start : (autoStartAt + idx * autoStep);
+            const end = entry.end != null ? entry.end : (start + defaultDuration);
+            return { text: entry.text, start, end };
+        });
+
+        // 表示する行を決定
+        let visible = [];
+        if (mode === 'accumulate') {
+            visible = entries.filter(e => currentTime >= e.start).map(e => e.text);
+        } else {
+            // 現在行のみ（該当なしなら直前の行）
+            const current = entries.find(e => currentTime >= e.start && currentTime < e.end);
+            if (current) {
+                visible = [current.text];
+            } else {
+                const prev = entries.filter(e => currentTime >= e.start).pop();
+                if (prev) visible = [prev.text];
+            }
+        }
+
+        const wrap = element.querySelector('.lyrics-wrap');
+        if (!wrap) return;
+
+        // スタイル
+        wrap.style.textAlign = align;
+        wrap.style.color = color;
+        wrap.style.gap = `${Math.round(fontSize * (lineHeight - 1))}px`;
+
+        // レイアウトに合わせてフォント反映
+        // 既存をクリアして描画（シンプル実装）
+        wrap.innerHTML = '';
+        visible.forEach(line => {
+            const p = document.createElement('div');
+            p.textContent = line;
+            p.style.fontSize = `${fontSize}px`;
+            p.style.lineHeight = `${lineHeight}`;
+            p.style.fontFamily = "'Shippori Mincho', 'Noto Serif JP', 'Yu Mincho', 'Hiragino Mincho ProN', 'Hiragino Mincho', 'MS Mincho', serif";
+            p.style.fontWeight = '700';
+            // 行の最大横幅を要素幅に合わせる
+            p.style.maxWidth = '90%';
+            p.style.textAlign = align;
+            wrap.appendChild(p);
         });
     }
 
@@ -1024,6 +1417,10 @@ _updateNumberTextGimmick(element, config, containerSize) {
                 case GIMMICK_TYPES.CLICK_COUNTER:
                     this._updateClickCounterGimmick(element, gimmickConfig, size);
                     break;
+
+                case GIMMICK_TYPES.LYRICS:
+                    this._updateLyricsGimmick(element, gimmickConfig, size, scaleFactor);
+                    break;
             }
         });
     }
@@ -1058,6 +1455,9 @@ function updatePuzzleImage() {
     const imagePath = PUZZLE_IMAGES[currentStage];
     if (imagePath) {
         const imageElement = document.createElement('img');
+        // 初期表示のチラつきを抑えるためデコード優先
+        imageElement.decoding = 'sync';
+        imageElement.loading = 'eager';
         imageElement.src = imagePath;
         imageElement.className = 'puzzle-image';
         imageElement.alt = `Puzzle ${currentStage}`;
@@ -1248,6 +1648,10 @@ function update() {
         updateRhythmDots();
         updateProblemElements();
     }
+    // デバッグ用タイムスライダーを同期
+    if (typeof debugTools?.updateTimeSlider === 'function') {
+        debugTools.updateTimeSlider(currentTime);
+    }
     requestAnimationFrame(update);
 }
 
@@ -1269,23 +1673,35 @@ function updateTimeFromClick(event, forceUpdate = false) {
     updateProgress();
 }
 
-playButton.addEventListener('click', () => {
+playButton.addEventListener('click', async () => {
     clickCounts.play++;
     if (isPlaying) {
-        audio.pause();
+        try { audio.pause(); } catch (_) {}
         playIcon.src = 'assets/images/controls/play.png';
-    } else {
-        audio.play();
-        playIcon.src = 'assets/images/controls/pause.png';
+        isPlaying = false;
+        return;
     }
-    isPlaying = !isPlaying;
+    try {
+        if (typeof audio._ensureContext === 'function') {
+            await audio._ensureContext();
+        }
+        await audio.play();
+        playIcon.src = 'assets/images/controls/pause.png';
+        isPlaying = true;
+    } catch (err) {
+        // Safari 等で失敗した場合はユーザー操作を促す
+        console.warn('Audio play failed:', err);
+        playIcon.src = 'assets/images/controls/play.png';
+        isPlaying = false;
+    }
 });
 
-audio.addEventListener('ended', () => {
-    currentTime = 0;
-    audio.currentTime = 0;
-    audio.play();
+// Disable long-press context menu on mobile
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
 });
+
+// Web Audio のシームレスループを使うため、ended での手動ループは不要
 
 prevButton.addEventListener('click', () => {
     clickCounts.prev++;
@@ -1310,14 +1726,15 @@ nextButton.addEventListener('click', () => {
 });
 
 // プログレスバーのドラッグ制御
+// プログレスバー: つまみ以外でも即ジャンプ＆ドラッグ開始
 progressBarElement.addEventListener('mousedown', (event) => {
-    const knob = document.getElementById('progressKnob');
-    const knobRect = knob.getBoundingClientRect();
+    isDragging = true;
+    updateTimeFromClick(event, true);
+});
 
-    if (event.clientX >= knobRect.left && event.clientX <= knobRect.right &&
-        event.clientY >= knobRect.top && event.clientY <= knobRect.bottom) {
-        isDragging = true;
-    }
+// バーをクリックしただけでもジャンプ
+progressBarElement.addEventListener('click', (event) => {
+    updateTimeFromClick(event, true);
 });
 
 document.addEventListener('mousemove', (event) => {
@@ -1332,15 +1749,9 @@ document.addEventListener('mouseup', () => {
 
 // タッチデバイス用のイベントリスナー
 function handleTouchStart(event) {
-    const touch = event.touches[0];
-    const knob = document.getElementById('progressKnob');
-    const knobRect = knob.getBoundingClientRect();
-
-    if (touch.clientX >= knobRect.left && touch.clientX <= knobRect.right &&
-        touch.clientY >= knobRect.top && touch.clientY <= knobRect.bottom) {
-        isDragging = true;
-        progressBarElement.addEventListener('touchmove', handleTouchMove);
-    }
+    isDragging = true;
+    progressBarElement.addEventListener('touchmove', handleTouchMove);
+    updateTimeFromTouch(event);
 }
 
 function handleTouchMove(event) {
@@ -1397,25 +1808,114 @@ const debugTools = {
 
         // キーボードショートカット
         document.addEventListener('keydown', (e) => {
+            if (e.repeat) return;
             let targetStage = null;
-            
-            // 通常の数字キー (0-9)
-            if (e.key >= '0' && e.key <= '9' && !e.shiftKey && !e.ctrlKey) {
-                targetStage = parseInt(e.key);
+            // 物理キー優先で判定（Shiftの記号化対策）
+            const code = e.code || '';
+            let digit = null;
+            if (code.startsWith('Digit')) {
+                digit = parseInt(code.slice(5), 10);
+            } else if (code.startsWith('Numpad')) {
+                const n = parseInt(code.slice(6), 10);
+                if (!isNaN(n) && n >= 0 && n <= 9) digit = n;
+            } else if (e.key && e.key >= '0' && e.key <= '9') {
+                digit = parseInt(e.key, 10);
             }
-            // Shift + 数字キー (11-19)
-            else if (e.key >= '1' && e.key <= '9' && e.shiftKey && !e.ctrlKey) {
-                targetStage = parseInt(e.key) + 10;
-            }
-            // Ctrl + 数字キー (21-29)
-            else if (e.key >= '1' && e.key <= '9' && !e.shiftKey && e.ctrlKey) {
-                targetStage = parseInt(e.key) + 20;
+
+            if (digit !== null) {
+                // Shift + 0..7 => 10..17
+                if (e.shiftKey && !e.ctrlKey) {
+                    if (digit >= 0 && digit <= 7) targetStage = 10 + digit;
+                }
+                // Ctrl + 1..9 => 21..29（従来維持）
+                else if (!e.shiftKey && e.ctrlKey) {
+                    if (digit >= 1 && digit <= 9) targetStage = 20 + digit;
+                }
+                // 単体 0..9 => 0..9
+                else if (!e.shiftKey && !e.ctrlKey) {
+                    targetStage = digit;
+                }
             }
 
             if (targetStage !== null && targetStage <= 25) {
+                e.preventDefault();
                 this.forceJumpToStage(targetStage);
             }
         });
+
+        // デバッグ用 再生時間バー
+        (function setupDebugTimeBar(self){
+            const toolsRoot = document.getElementById('debugTools');
+            if (!toolsRoot || toolsRoot.querySelector('#debugTimeSlider')) return;
+
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.gap = '8px';
+            row.style.alignItems = 'center';
+            row.style.marginTop = '6px';
+
+            const label = document.createElement('div');
+            label.textContent = '再生時間:';
+            label.style.color = 'white';
+            label.style.fontSize = '12px';
+
+            const timeValue = document.createElement('div');
+            timeValue.id = 'debugTimeValue';
+            timeValue.textContent = '0:00';
+            timeValue.style.color = 'white';
+            timeValue.style.fontSize = '12px';
+            timeValue.style.width = '48px';
+            timeValue.style.textAlign = 'right';
+
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.id = 'debugTimeSlider';
+            slider.min = '0';
+            slider.max = String(TOTAL_DURATION);
+            slider.step = '0.05';
+            slider.value = '0';
+            slider.style.flex = '1';
+
+            row.appendChild(label);
+            row.appendChild(slider);
+            row.appendChild(timeValue);
+            toolsRoot.appendChild(row);
+
+            const startScrub = () => { self._scrubbing = true; };
+            const endScrub = () => { self._scrubbing = false; };
+            slider.addEventListener('mousedown', startScrub);
+            slider.addEventListener('touchstart', startScrub, { passive: true });
+            slider.addEventListener('mouseup', endScrub);
+            slider.addEventListener('touchend', endScrub);
+
+            const seekTo = (sec) => {
+                currentTime = sec;
+                audio.currentTime = sec;
+                self.updateTimeLabel(sec);
+                updateProgress();
+                updateProblemElements();
+                updateRhythmDots();
+            };
+
+            slider.addEventListener('input', () => {
+                const sec = parseFloat(slider.value) || 0;
+                const now = (window.performance && performance.now) ? performance.now() : Date.now();
+                if (!self._lastSeekAt || now - self._lastSeekAt > 50) {
+                    self._lastSeekAt = now;
+                    seekTo(sec);
+                } else {
+                    // 軽量に表示だけ更新
+                    self.updateTimeLabel(sec);
+                }
+            });
+            slider.addEventListener('change', () => {
+                const sec = parseFloat(slider.value) || 0;
+                seekTo(sec);
+            });
+
+            self._timeSlider = slider;
+            self._timeLabel = timeValue;
+        })(this);
     },
 
     // 強制的にステージを移動する関数
@@ -1435,6 +1935,19 @@ const debugTools = {
             // UI更新
             updateStageContent();
             console.log(`デバッグ: ステージ${stageNumber}に移動しました`);
+        }
+    },
+    updateTimeLabel(sec) {
+        if (this._timeLabel) {
+            this._timeLabel.textContent = formatTime(sec);
+        }
+    },
+    updateTimeSlider(sec) {
+        if (!this._timeSlider || this._scrubbing) return;
+        const clamped = Math.max(0, Math.min(TOTAL_DURATION, sec));
+        if (this._timeSlider.value !== String(clamped)) {
+            this._timeSlider.value = String(clamped);
+            this.updateTimeLabel(clamped);
         }
     }
 };
@@ -1459,18 +1972,81 @@ class AssetLoader {
         this.loadedAssets = 0;
         this.loadingScreen = document.getElementById('loadingScreen');
         this.progressText = this.loadingScreen.querySelector('.loading-progress');
-        this.audio = new Audio('assets/audio/MUSIC.mp3');
+        this.progressImage = this.loadingScreen.querySelector('.loading-image');
+        // 音声は HTMLAudio 要素ではロードせず、fetch で ArrayBuffer を事前取得
+        this.cache = new Map();
     }
 
     updateLoadingProgress() {
         const percentage = Math.floor((this.loadedAssets / this.totalAssets) * 100);
-        this.progressText.textContent = `${percentage}%`;
+        if (this.progressText) this.progressText.textContent = `${percentage}%`;
+        if (this.progressImage) {
+            this.progressImage.style.setProperty('--p', percentage);
+            // use turn unit for stable conic angle math
+            this.progressImage.style.setProperty('--a', `${percentage / 100}turn`);
+        }
+    }
+
+    // Safari対応の新しいローダー（音声は ArrayBuffer のみ事前フェッチ）
+    async loadAll2() {
+        try {
+            const imageList = [
+                'assets/images/load/load.png',
+                ...Object.values(PUZZLE_IMAGES),
+                'assets/images/controls/play.png',
+                'assets/images/controls/pause.png',
+                'assets/images/controls/prev.png',
+                'assets/images/controls/next.png',
+                'assets/images/controls/hint.png',
+                ...Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage8/moon${i}.png`),
+                ...Array.from({ length: 8 }, (_, i) => `assets/images/puzzles/stage10/black${i}.png`),
+                ...Array.from({ length: 16 }, (_, i) => `assets/images/puzzles/wall/wall${i}.png`)
+            ];
+
+            this.totalAssets = imageList.length + 1 + 1; // images + audio buffer + fonts
+            this.loadedAssets = 0;
+
+            const imagePromises = imageList.map(src => new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = async () => {
+                    try { if (img.decode) await img.decode(); } catch (_) {}
+                    this.cache.set(src, img);
+                    this.loadedAssets++;
+                    this.updateLoadingProgress();
+                    resolve();
+                };
+                img.onerror = reject;
+                img.src = src;
+            }));
+
+            const audioBufferPromise = fetch('assets/audio/MUSIC5.mp3', { cache: 'force-cache' })
+                .then(res => { if (!res.ok) throw new Error('Audio fetch failed'); return res.arrayBuffer(); })
+                .then(buf => { this.cache.set('__audioArrayBuffer__', buf); this.loadedAssets++; this.updateLoadingProgress(); return buf; });
+
+            const fontPromise = (document.fonts && document.fonts.ready)
+                ? document.fonts.ready.then(() => { this.loadedAssets++; this.updateLoadingProgress(); })
+                : Promise.resolve().then(() => { this.loadedAssets++; this.updateLoadingProgress(); });
+
+            const [audioArrayBuffer] = await Promise.all([audioBufferPromise, fontPromise, ...imagePromises]);
+            window.__imageCache = this.cache;
+            window.__audioArrayBuffer = audioArrayBuffer;
+
+            this.loadingScreen.classList.add('fade-out');
+            await new Promise(resolve => setTimeout(resolve, 500));
+            this.loadingScreen.style.display = 'none';
+            return true;
+        } catch (error) {
+            console.error('Asset loading failed:', error);
+            this.progressText.textContent = 'Loading failed. Please refresh.';
+            return false;
+        }
     }
 
     async loadAll() {
         try {
             // 画像のリストを作成
             const imageList = [
+                'assets/images/load/load.png',
                 // パズル画像
                 ...Object.values(PUZZLE_IMAGES),
                 
@@ -1498,7 +2074,13 @@ class AssetLoader {
             const imagePromises = imageList.map(src => {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
-                    img.onload = () => {
+                    img.onload = async () => {
+                        try {
+                            if (img.decode) {
+                                await img.decode();
+                            }
+                        } catch (e) { /* ignore */ }
+                        this.cache.set(src, img);
                         this.loadedAssets++;
                         this.updateLoadingProgress();
                         resolve();
@@ -1536,6 +2118,7 @@ class AssetLoader {
 
             // すべてのアセットのロード完了を待つ
             const [loadedAudio] = await Promise.all([audioPromise, ...imagePromises]);
+            window.__imageCache = this.cache;
             
             // グローバルのaudio要素に設定
             window.audio = loadedAudio;
@@ -1739,9 +2322,9 @@ async function initialize() {
     modal.style.visibility = 'hidden';
     container.style.visibility = 'hidden';
 
-    // アセットのロード
+    // アセットのロード（Safari 対応版）
     const loader = new AssetLoader();
-    const loadSuccess = await loader.loadAll();
+    const loadSuccess = await loader.loadAll2();
 
     if (!loadSuccess) {
         return; // ロード失敗時は初期化中止
@@ -1751,13 +2334,41 @@ async function initialize() {
     modal.style.visibility = 'visible';
     
     // ゲーム開始を遅延させる
-    const startGame = () => {
+    const startGame = async () => {
         modal.style.display = 'none';
+        // 最初にステージ画像が確実に用意されてから表示する（ほんの一瞬）
+        try {
+            const cache = window.__imageCache;
+            const firstImage = (typeof PUZZLE_IMAGES !== 'undefined') ? PUZZLE_IMAGES[currentStage] : null;
+            const cachedImg = firstImage && cache ? cache.get(firstImage) : null;
+            if (cachedImg && typeof cachedImg.decode === 'function') {
+                await cachedImg.decode();
+            }
+        } catch (_) {}
         container.style.visibility = 'visible';
+        // ユーザー操作のタイミングで AudioContext を初期化 + 事前フェッチ済みバッファを提供
+        if (audio && typeof audio._ensureContext === 'function') {
+            try {
+                await audio._ensureContext();
+                if (window.__audioArrayBuffer) {
+                    audio.provideArrayBuffer(window.__audioArrayBuffer);
+                }
+                await audio._load();
+            } catch (_) {}
+        }
         updateStageContent();
         updateProgress();
         requestAnimationFrame(update);
         debugTools.initialize();
+
+        // レイアウトが安定してからもう一度描画（初回のズレ対策）
+        const nextFrame = () => new Promise(r => requestAnimationFrame(() => r()));
+        try {
+            await nextFrame();
+            await nextFrame();
+            updateStageContent();
+            updateProblemElements();
+        } catch (_) {}
     };
 
     // OKボタンのクリックイベント
@@ -1770,6 +2381,7 @@ async function initialize() {
 
 
 document.addEventListener('keydown', (event) => {
+    if (event.repeat) return;
     // エンターキー(13)またはスペースキー(32)が押された場合
     if (event.keyCode === 13 || event.keyCode === 32) {
         // デフォルトの動作を防止（スペースキーでのスクロールなど）

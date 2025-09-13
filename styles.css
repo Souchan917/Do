@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+html, body {
+    background-color: #000; /* 白フラッシュ防止（初期背景を黒に固定） */
+}
+
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -12,6 +16,20 @@ body {
     min-height: 100vh;
     color: white;
     transition: background-color 0.5s ease;
+}
+
+/* Prevent text selection and callout on interactive UI */
+html, body, .container, button, .control-button, .modal-button, .share-button, .reset-button, .hint-button, .progress-bar, .problem-area, .title-area, .answer-area, .lyrics-wrap, img {
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* Improve touch behavior for buttons (avoid double-tap zoom, etc.) */
+button, .control-button, .modal-button, .share-button, .reset-button, .hint-button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* ステージごとのテーマカラー用のクラス */
@@ -677,6 +695,9 @@ body.stage-16 .reset-container.show {
 
 .loading-content {
     text-align: center;
+    display: grid;
+    justify-items: center;
+    gap: 16px;
 }
 
 .loading-circle {
@@ -696,9 +717,57 @@ body.stage-16 .reset-container.show {
     letter-spacing: 2px;
 }
 
+.loading-visual {
+    position: relative;
+}
+
+.loading-image {
+    /* progress 0-100 is mapped via --p */
+    --p: 0;
+    width: 240px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    position: relative;
+}
+
+.loading-image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: url('assets/images/load/load.png') center / contain no-repeat;
+    /* Reveal counter-clockwise from 12 o'clock */
+    -webkit-mask: conic-gradient(
+        from calc(0deg - var(--a, 0deg)),
+        #000 var(--a, 0deg),
+        transparent 0
+    );
+            mask: conic-gradient(
+        from calc(0deg - var(--a, 0deg)),
+        #000 var(--a, 0deg),
+        transparent 0
+    );
+}
+
+.loading-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.18) inset,
+                0 8px 24px rgba(0,0,0,0.35) inset;
+}
+
 .loading-progress {
-    color: #888;
-    font-size: 18px;
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    pointer-events: none;
 }
 
 @keyframes spin {
