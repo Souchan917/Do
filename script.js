@@ -2019,6 +2019,7 @@ class AssetLoader {
                 img.src = src;
             }));
 
+            
             const audioBufferPromise = fetch('assets/audio/MUSIC.mp3', { cache: 'force-cache' })
                 .then(res => { if (!res.ok) throw new Error('Audio fetch failed'); return res.arrayBuffer(); })
                 .then(buf => { this.cache.set('__audioArrayBuffer__', buf); this.loadedAssets++; this.updateLoadingProgress(); return buf; });
