@@ -81,9 +81,13 @@ body.stage-23 { background-color: #5D4037; }
     width: 100%;
     max-width: 400px;
     padding: 20px;
-  
 }
-
+/* Desktop: enlarge puzzle area and container up to 40% of viewport width */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 40vw; /* Makes .problem-area (width:100%) scale up to 40% of screen width */
+    }
+}
 .problem-area {
     width: 100%;
     aspect-ratio: 1;
