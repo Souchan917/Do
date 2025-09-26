@@ -4,7 +4,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAnalytics, isSupported as analyticsIsSupported } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
-import { getDatabase, ref, update, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getFirestore, doc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Your Firebase config
 const firebaseConfig = {
@@ -22,18 +22,26 @@ const app = initializeApp(firebaseConfig);
 try {
   analyticsIsSupported().then((ok) => { if (ok) getAnalytics(app); }).catch(() => {});
 } catch (_) {}
-const db = getDatabase(app);
+const db = getFirestore(app);
 
-// Data structure: games/{GAME_ID}/stats
+// Data structure (Firestore): games/{GAME_ID}/stats/summary (document)
 const GAME_ID = "Do";
-const statsRef = ref(db, `games/${GAME_ID}/stats`);
+const statsDocRef = doc(db, "games", GAME_ID, "stats", "summary");
 
-function safeUpdate(updates) {
+// Ensure the stats document exists so updateDoc won't fail
+let __ensureDoc = setDoc(statsDocRef, { __initialized: true }, { merge: true }).catch(() => {});
+
+async function safeUpdate(updates) {
   try {
-    return update(statsRef, updates);
+    await __ensureDoc;
+    await updateDoc(statsDocRef, updates);
   } catch (e) {
-    console.warn("Firebase update skipped:", e);
-    return Promise.resolve();
+    try {
+      await setDoc(statsDocRef, {}, { merge: true });
+      await updateDoc(statsDocRef, updates);
+    } catch (err) {
+      console.warn("Firestore update skipped:", err);
+    }
   }
 }
 
@@ -87,4 +95,3 @@ window.firebaseReady = Promise.resolve();
 
 // Record a visit immediately
 recordVisit();
-
