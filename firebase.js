@@ -1,153 +1,90 @@
-// firebase.js
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { 
-    getDatabase, 
-    ref, 
-    set, 
-    push, 
-    get, 
-    query, 
-    orderByChild, 
-    limitToLast,
-    increment,
-    update 
-} from "firebase/database";
+// Firebase counters for "Do" (minimal, aggregated only)
+// Exposes global API: window.firebaseCounters.{recordStart, recordClear}
+// Visits (total + unique) are recorded automatically on load.
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAnalytics, isSupported as analyticsIsSupported } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+import { getDatabase, ref, update, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
+// Your Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyBhBJtjCTMy_onq0bDO_OrsXwS7QDjNcPQ",
+  authDomain: "webnazokanri.firebaseapp.com",
+  projectId: "webnazokanri",
+  storageBucket: "webnazokanri.firebasestorage.app",
+  messagingSenderId: "175593773883",
+  appId: "1:175593773883:web:9be1347ff9532ba5e0751e",
+  measurementId: "G-8YDV70EC6F"
+};
 
-// Firebaseの初期化
+// Initialize
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+try {
+  analyticsIsSupported().then((ok) => { if (ok) getAnalytics(app); }).catch(() => {});
+} catch (_) {}
 const db = getDatabase(app);
 
-// プレイ統計管理クラス
-class GameStatistics {
-    constructor() {
-        this.sessionId = Math.random().toString(36).substring(2, 15);
-        this.isNewVisitor = true;
-        this.hasStartedPlaying = false;
-    }
+// Data structure: games/{GAME_ID}/stats
+const GAME_ID = "Do";
+const statsRef = ref(db, `games/${GAME_ID}/stats`);
 
-    async initialize() {
-        await this.recordVisit();
-    }
-
-    async recordVisit() {
-        const statsRef = ref(db, 'statistics');
-        const updates = {
-            totalVisits: increment(1)
-        };
-
-        if (this.isNewVisitor) {
-            updates.uniqueVisitors = increment(1);
-            this.isNewVisitor = false;
-        }
-
-        await update(statsRef, updates);
-    }
-
-    async recordGameStart() {
-        if (!this.hasStartedPlaying) {
-            const statsRef = ref(db, 'statistics');
-            await update(statsRef, {
-                totalPlays: increment(1)
-            });
-            this.hasStartedPlaying = true;
-        }
-    }
-
-    async recordClear(clickCount, clearTime) {
-        try {
-            // クリア記録を保存
-            const recordRef = ref(db, 'clearRecords');
-            await push(recordRef, {
-                sessionId: this.sessionId,
-                clickCount: clickCount,
-                clearTime: clearTime,
-                timestamp: Date.now()
-            });
-
-            // 統計情報を更新
-            const statsRef = ref(db, 'statistics');
-            await update(statsRef, {
-                totalClears: increment(1),
-                totalClicksAllClears: increment(clickCount)
-            });
-
-            console.log('クリア記録保存成功');
-        } catch (error) {
-            console.error('クリア記録保存エラー:', error);
-        }
-    }
-
-    async getStatistics() {
-        try {
-            const statsRef = ref(db, 'statistics');
-            const snapshot = await get(statsRef);
-            const stats = snapshot.val() || {
-                totalVisits: 0,
-                uniqueVisitors: 0,
-                totalPlays: 0,
-                totalClears: 0,
-                totalClicksAllClears: 0
-            };
-
-            // クリア記録から追加の統計を計算
-            const recordsRef = ref(db, 'clearRecords');
-            const recordsSnapshot = await get(recordsRef);
-            const records = [];
-            recordsSnapshot.forEach(childSnapshot => {
-                records.push(childSnapshot.val());
-            });
-
-            // 最小クリック数を計算
-            const minClicks = records.length > 0 
-                ? Math.min(...records.map(r => r.clickCount))
-                : '-';
-
-            // 平均クリック数を計算
-            const avgClicks = records.length > 0
-                ? Math.round(stats.totalClicksAllClears / stats.totalClears)
-                : '-';
-
-            return {
-                totalVisits: stats.totalVisits,
-                uniqueVisitors: stats.uniqueVisitors,
-                totalPlays: stats.totalPlays,
-                totalClears: stats.totalClears,
-                bestClickCount: minClicks,
-                averageClickCount: avgClicks
-            };
-        } catch (error) {
-            console.error('統計情報取得エラー:', error);
-            return null;
-        }
-    }
-
-    async getTopRecords(limit = 10) {
-        try {
-            const recordsRef = ref(db, 'clearRecords');
-            const recordsQuery = query(
-                recordsRef, 
-                orderByChild('clickCount'), 
-                limitToLast(limit)
-            );
-            const snapshot = await get(recordsQuery);
-            const records = [];
-            snapshot.forEach((childSnapshot) => {
-                records.push({
-                    id: childSnapshot.key,
-                    ...childSnapshot.val()
-                });
-            });
-            return records.sort((a, b) => a.clickCount - b.clickCount);
-        } catch (error) {
-            console.error('記録取得エラー:', error);
-            return [];
-        }
-    }
+function safeUpdate(updates) {
+  try {
+    return update(statsRef, updates);
+  } catch (e) {
+    console.warn("Firebase update skipped:", e);
+    return Promise.resolve();
+  }
 }
 
-// エクスポート
-export const gameStats = new GameStatistics();
+// Local de-dup keys (approx unique by browser)
+const VISITOR_KEY = "do_unique_visitor_v1";
+const START_KEY = "do_unique_start_v1";
+const CLEAR_KEY = "do_unique_clear_v1";
+
+function recordVisit() {
+  const updates = { totalVisits: increment(1) };
+  try {
+    if (typeof localStorage !== "undefined" && !localStorage.getItem(VISITOR_KEY)) {
+      updates.uniqueVisitors = increment(1);
+      localStorage.setItem(VISITOR_KEY, "1");
+    }
+  } catch (_) {}
+  return safeUpdate(updates);
+}
+
+let startRecordedThisSession = false;
+function recordStart() {
+  if (startRecordedThisSession) return Promise.resolve();
+  startRecordedThisSession = true;
+  const updates = { totalStarts: increment(1) };
+  try {
+    if (typeof localStorage !== "undefined" && !localStorage.getItem(START_KEY)) {
+      updates.uniqueStarts = increment(1);
+      localStorage.setItem(START_KEY, "1");
+    }
+  } catch (_) {}
+  return safeUpdate(updates);
+}
+
+let clearRecordedThisSession = false;
+function recordClear() {
+  if (clearRecordedThisSession) return Promise.resolve();
+  clearRecordedThisSession = true;
+  const updates = { totalClears: increment(1) };
+  try {
+    if (typeof localStorage !== "undefined" && !localStorage.getItem(CLEAR_KEY)) {
+      updates.uniqueClears = increment(1);
+      localStorage.setItem(CLEAR_KEY, "1");
+    }
+  } catch (_) {}
+  return safeUpdate(updates);
+}
+
+// Expose to non-module script.js
+window.firebaseCounters = { recordStart, recordClear };
+window.firebaseReady = Promise.resolve();
+
+// Record a visit immediately
+recordVisit();
+

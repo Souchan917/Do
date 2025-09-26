@@ -1620,6 +1620,11 @@ function updateProgress() {
 
 function updateStageContent() {
     titleArea.textContent = STAGE_NAMES[currentStage];
+    // Firebase: record clear once when entering ending stage
+    if (typeof currentStage !== 'undefined' && currentStage === 17 && !window.__do_clearRecorded) {
+        window.__do_clearRecorded = true;
+        try { window.firebaseCounters && window.firebaseCounters.recordClear && window.firebaseCounters.recordClear(); } catch (_) {}
+    }
     updatePuzzleImage();
     updateBackgroundColor();
     updateAnswer();
@@ -2338,6 +2343,7 @@ async function initialize() {
     
     // ゲーム開始を遅延させる
     const startGame = async () => {
+        try { window.firebaseCounters && window.firebaseCounters.recordStart && window.firebaseCounters.recordStart(); } catch (_) {}
         modal.style.display = 'none';
         // 最初にステージ画像が確実に用意されてから表示する（ほんの一瞬）
         try {
